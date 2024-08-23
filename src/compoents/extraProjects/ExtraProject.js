@@ -12,16 +12,20 @@ import {
   Table,
   Popconfirm,
   Badge,
+  Tag,
+  Typography,
 } from "antd";
 import { useApp } from "../../contexts/AppContext";
 import { Timestamp } from "firebase/firestore";
 import {
   UploadOutlined,
+  UserOutlined,
   FileTextOutlined,
   BellOutlined,
   DeleteOutlined,
   EditOutlined,
   SearchOutlined,
+  CloseOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import _ from "lodash";
@@ -34,7 +38,7 @@ const statusOptions = {
   Urgent: { color: "red" },
   Overdue: { color: "purple" },
 };
-
+const { Title } = Typography;
 const { RangePicker } = DatePicker;
 function ExtraProject() {
   const {
@@ -58,6 +62,16 @@ function ExtraProject() {
   const [editForm] = Form.useForm();
   const [currentRecord, setCurrentRecord] = useState(null); // State to hold the current record
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpen = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleClose = () => {
+    setIsModalOpen(false);
+  };
+
   useEffect(() => {
     fetchExtraProjects();
     processTeamMembers(state.teamMembers);
@@ -76,14 +90,6 @@ function ExtraProject() {
         value: `${member.firstName} ${member.lastName}`,
       }))
     );
-  };
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
   };
 
   const handleSave = async (values) => {
@@ -108,72 +114,88 @@ function ExtraProject() {
   };
 
   const AddExtraProjectForm = () => (
-    <Form form={form} layout="vertical" onFinish={handleSave}>
-      <Form.Item
-        name="projectName"
-        label="Project Name"
-        rules={[{ required: true, message: "Please enter the project name" }]}
-      >
-        <Input placeholder="Project Name" />
-      </Form.Item>
-      <Form.Item
-        name="phoneNumber"
-        label="Phone Number"
-        rules={[{ required: true, message: "Please enter the phone number" }]}
-      >
-        <Input placeholder="Phone Number" />
-      </Form.Item>
-      <Form.Item
-        name="dueDate"
-        label="Due Date"
-        rules={[{ required: true, message: "Please select the due date" }]}
-      >
-        <DatePicker placeholder="Select Due Date" style={{ width: "100%" }} />
-      </Form.Item>
-      <Form.Item
-        name="assignee"
-        label="Assign to"
-        rules={[{ required: true, message: "Please select an assignee" }]}
-      >
-        <AutoComplete
-          options={coordinatorOptions}
-          placeholder="Assign to"
-          filterOption={(inputValue, option) =>
-            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+    <div className="bg-white rounded-lg p-6 max-w-md mx-auto">
+      <Title level={4} className="mb-6">
+        Add Extra Project
+      </Title>
+      <hr />
+      <Form form={form} layout="vertical" onFinish={handleSave}>
+        <Form.Item
+          name="projectName"
+          label={
+            <span className="font-medium">
+              Project Name <span className="text-red-500">*</span>
+            </span>
           }
-        />
-      </Form.Item>
-      <Form.Item
-        name="payment"
-        label="Payment"
-        rules={[{ required: true, message: "Please enter the payment amount" }]}
-      >
-        <Input placeholder="Payment" type="number" />
-      </Form.Item>
-      <Form.Item name="note" label="Note">
-        <TextArea placeholder="Write your note here" rows={4} maxLength={100} />
-      </Form.Item>
-      {/* <Form.Item
-        name="file"
-        label="Upload File"
-        valuePropName="fileList"
-        getValueFromEvent={e => Array.isArray(e) ? e : e && e.fileList}
-      >
-        <Upload name="file" beforeUpload={() => false}>
-          <Button icon={<UploadOutlined />}>Click to Upload</Button>
-        </Upload>
-      </Form.Item> */}
-      <Form.Item>
-        <Button
-          type="primary"
-          htmlType="submit"
-          style={{ marginRight: "10px" }}
+          rules={[{ required: true, message: "Please enter the project name" }]}
         >
-          Create Task
-        </Button>
-        <Button onClick={handleClose}>Cancel</Button>
-      </Form.Item>
-    </Form>
+          <Input placeholder="Type project name here" />
+        </Form.Item>
+
+        <Form.Item
+          name="dueDate"
+          label={
+            <span className="font-medium">
+              Due Date <span className="text-red-500">*</span>
+            </span>
+          }
+          rules={[{ required: true, message: "Please select the due date" }]}
+        >
+          <DatePicker className="w-full" placeholder="Select date" />
+        </Form.Item>
+
+        <Form.Item
+          name="assignee"
+          label={
+            <span className="font-medium">
+              Assign to <span className="text-red-500">*</span>
+            </span>
+          }
+          rules={[{ required: true, message: "Please select an assignee" }]}
+        >
+          <Select placeholder="Select team member">
+            <Option value="member1">Team Member 1</Option>
+            <Option value="member2">Team Member 2</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          label={<span className="font-medium">Notify changes to</span>}
+        >
+          <div className="p-1 border border-gray-300 rounded-md">
+            <Tag closable onClose={() => {}} className="m-1">
+              Danny George <CloseOutlined />
+            </Tag>
+            <Tag closable onClose={() => {}} className="m-1">
+              Shreya Naidu <CloseOutlined />
+            </Tag>
+          </div>
+        </Form.Item>
+
+        <Form.Item
+          name="note"
+          label={<span className="font-medium">Note</span>}
+        >
+          <TextArea
+            placeholder="Write your note here"
+            rows={4}
+            maxLength={100}
+            showCount
+          />
+        </Form.Item>
+
+        <Form.Item className="flex justify-end space-x-2">
+          <Button
+            type="primary"
+            htmlType="submit"
+            style={{ backgroundColor: "#20B2AA" }}
+          >
+            Create Task
+          </Button>
+          <Button onClick={handleClose}>Cancel</Button>
+        </Form.Item>
+      </Form>
+    </div>
   );
 
   const handleNoteIconClick = (note, id) => {
@@ -471,6 +493,14 @@ function ExtraProject() {
           >
             <Option value="allTasks">All Tasks</Option>
           </Select>
+          <Button
+            icon={<UserOutlined />}
+            suffix={<UserOutlined />}
+            className="border-gray-300"
+            onClick={handleOpen}
+          >
+            Add Extra project
+          </Button>
         </div>
       </div>
 
@@ -519,12 +549,7 @@ function ExtraProject() {
         style={{ marginTop: 20 }}
         size="small"
       />
-      <Modal
-        title="Add Extra Project"
-        open={open}
-        onCancel={handleClose}
-        footer={null}
-      >
+      <Modal open={isModalOpen} onCancel={handleClose} footer={null}>
         <AddExtraProjectForm />
       </Modal>
       <Modal

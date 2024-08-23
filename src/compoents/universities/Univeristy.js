@@ -622,32 +622,6 @@ function Univeristy() {
     <div>
       {contextHolder}
 
-      <h2>University Database</h2>
-      <div style={{ marginBottom: 16 }}>
-        <Space>
-          <Select defaultValue="None">
-            <Option value="None">Filter By: None</Option>
-            <Option value="Name">Name</Option>
-            {/* Add more filter options as needed */}
-          </Select>
-          <Switch
-            checked={showCompleted}
-            onChange={() => setShowCompleted(!showCompleted)}
-            checkedChildren="Show Completed"
-            unCheckedChildren="Show Completed"
-          />
-          <Input placeholder="Search" prefix={<SearchOutlined />} />
-
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={handleAddUniversity}
-          >
-            Add University
-          </Button>
-        </Space>
-      </div>
-
       <div className="flex flex-col gap-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">

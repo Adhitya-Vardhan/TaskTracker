@@ -438,16 +438,6 @@ function TeamMembers() {
             <Button className="border-gray-300" />
           </div>
         </div>
-
-        <div className="add-button">
-          <Button
-            type="primary"
-            icon={<UserAddOutlined />}
-            onClick={handleAddTeam}
-          >
-            Add Team Member
-          </Button>
-        </div>
       </div>
 
       <Table
