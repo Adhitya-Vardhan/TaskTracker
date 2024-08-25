@@ -12,6 +12,7 @@ import {
   Space,
   AutoComplete,
   Select,
+  Card,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -22,6 +23,8 @@ import {
   SearchOutlined,
   DeleteOutlined,
   EyeOutlined,
+  CloseOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { useApp } from "../../contexts/AppContext";
 import Loader from "../loader/Loader";
@@ -431,71 +434,89 @@ function Clients() {
   };
 
   const EditClientForm = () => (
-    <Form form={editForm} layout="vertical" onFinish={onEditFinish}>
-      <Form.Item
-        name="name"
-        label="Name"
-        rules={[{ required: true, message: "Please input the name!" }]}
-      >
-        <Input placeholder="Type Name" />
-      </Form.Item>
-      <Form.Item
-        name="contact"
-        label="Contact"
-        rules={[{ required: true, message: "Please input the contact!" }]}
-      >
-        <Input placeholder="Type Contact" />
-      </Form.Item>
-      <Form.Item name="university" label="University">
-        <Input placeholder="Type University" disabled />
-      </Form.Item>
-      <Form.Item name="username" label="Username">
-        <Input placeholder="Type Username" disabled />
-      </Form.Item>
-      <Form.Item
-        name="password"
-        label="Password"
-        rules={[{ required: true, message: "Please input the password!" }]}
-      >
-        <Input placeholder="Type Password" />
-      </Form.Item>
-      <Form.Item
-        name="referral"
-        label="Referral"
-        rules={[{ required: true, message: "Please input the referral!" }]}
-      >
-        <Input placeholder="Type Referral" />
-      </Form.Item>
-      <Form.Item
-        name="amount"
-        label="amount"
-        rules={[{ required: true, message: "Please input the price!" }]}
-      >
-        <Input placeholder="Type Price" />
-      </Form.Item>
-      <Form.Item
-        name="currency"
-        label="Currency"
-        rules={[{ required: true, message: "Please select the currency!" }]}
-      >
-        <AutoComplete
-          options={[
-            { value: "USD" },
-            { value: "EUR" },
-            { value: "INR" },
-            { value: "GBP" },
-          ]}
-          placeholder="Select Currency"
-        />
-      </Form.Item>
-      <Form.Item>
-        <Space>
-          <Button type="primary" htmlType="submit">
-            Save changes
-          </Button>
+    <Card
+      title={
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span>Edit Client Profile</span>
+          <Button type="text" icon={<CloseOutlined />} />
+        </div>
+      }
+      style={{ width: 400 }}
+    >
+      <Form form={form} layout="vertical" onFinish={onEditFinish}>
+        <Form.Item
+          name="name"
+          label="Name"
+          rules={[{ required: true, message: "Please input the name!" }]}
+        >
+          <Input placeholder="Ira Sharma" />
+        </Form.Item>
+
+        <Form.Item
+          name="contact"
+          label="Contact"
+          rules={[{ required: true, message: "Please input the contact!" }]}
+        >
+          <Input placeholder="(603) 555-0123" />
+        </Form.Item>
+
+        <Form.Item name="university" label="University">
+          <Select defaultValue="UCLA">
+            <Option value="UCLA">UCLA</Option>
+            {/* Add more universities as needed */}
+          </Select>
+        </Form.Item>
+
+        <Form.Item name="username" label="Username">
+          <Input placeholder="ira_sharma" />
+        </Form.Item>
+
+        <Form.Item
+          name="password"
+          label="Password"
+          rules={[{ required: true, message: "Please input the password!" }]}
+        >
+          <Input.Password placeholder="irashrma010" />
+        </Form.Item>
+
+        <Space style={{ display: "flex", marginBottom: 8 }} align="baseline">
+          <Form.Item
+            name="amount"
+            label="Amount"
+            rules={[{ required: true, message: "Please input the amount!" }]}
+          >
+            <Input placeholder="Type Payment Amount" />
+          </Form.Item>
+
+          <Form.Item
+            name="currency"
+            label="Currency"
+            rules={[{ required: true, message: "Please select the currency!" }]}
+          >
+            <Select defaultValue="USD" style={{ width: 120 }}>
+              <Option value="USD">USD</Option>
+              <Option value="EUR">EUR</Option>
+              <Option value="GBP">GBP</Option>
+            </Select>
+          </Form.Item>
         </Space>
-      </Form.Item>
-    </Form>
+
+        <Form.Item>
+          <Space>
+            <Button>Cancel</Button>
+            <Button type="primary" htmlType="submit">
+              Save Changes
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </Card>
   );
 
   const handleSubjectCompleted = async (record, id) => {
@@ -630,6 +651,44 @@ function Clients() {
         )}
         <Table
           dataSource={client.coordinators || []}
+          components={{
+            header: {
+              cell: (props) => (
+                <th
+                  {...props}
+                  className="font-semibold px-4 text-left"
+                  style={{
+                    backgroundColor: "#5DDBD3",
+                    color: "white",
+                    paddingTop: 6,
+                    paddingBottom: 6,
+                  }}
+                />
+              ),
+            },
+            body: {
+              row: (props) => (
+                <tr
+                  {...props}
+                  className="hover:bg-gray-50"
+                  style={{
+                    paddingTop: 6,
+                    paddingBottom: 6,
+                  }}
+                />
+              ),
+              cell: (props) => (
+                <td
+                  {...props}
+                  className=" border-b border-gray-200"
+                  style={{
+                    paddingTop: 6,
+                    paddingBottom: 6,
+                  }}
+                />
+              ),
+            },
+          }}
           columns={[
             {
               title: "Subject Name",
@@ -764,13 +823,14 @@ function Clients() {
                 </Select>
                 <Button className="border-gray-300" />
               </div>
-              <Select
-                defaultValue="allTasks"
-                style={{ width: 120 }}
-                className="border-gray-300 end-item"
+              <Button
+                icon={<UserOutlined />}
+                suffix={<UserOutlined />}
+                className="border-gray-300"
+                onClick={showModal}
               >
-                <Option value="allTasks">All Tasks</Option>
-              </Select>
+                Add client
+              </Button>
             </div>
           </div>
 

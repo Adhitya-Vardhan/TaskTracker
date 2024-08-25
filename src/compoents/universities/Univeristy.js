@@ -12,6 +12,7 @@ import {
   AutoComplete,
   Popconfirm,
   Divider,
+  Typography,
 } from "antd";
 import {
   SearchOutlined,
@@ -30,6 +31,7 @@ import "./university.scss";
 import { useApp } from "../../contexts/AppContext";
 
 const { Option } = Select;
+const { Title, Text } = Typography;
 
 function Univeristy() {
   const {
@@ -106,37 +108,34 @@ function Univeristy() {
   };
 
   const AddUniversityForm = () => (
-    <Form
-      layout="vertical"
-      onFinish={onFinish}
-      style={{ maxWidth: "600px", margin: "auto" }}
-    >
-      <Form.Item>
-        <p style={{ color: "grey" }}>
-          Please Provide a Unique ID, ID cannot be edited once added.
-        </p>
-      </Form.Item>
+    <Form form={form} layout="vertical" onFinish={onFinish}>
+      <Text type="secondary">
+        Please Provide a Unique ID, ID cannot be edited once added.
+      </Text>
+
       <Divider />
 
       <Form.Item
         name="id"
-        label="Univerisity Id"
-        rules={[
-          { required: true, message: "Please input the university name!" },
-        ]}
+        label="University Id"
+        rules={[{ required: true, message: "Please input the university ID!" }]}
       >
         <Input placeholder="Please enter unique id" />
       </Form.Item>
+
       <Form.Item
         name="name"
-        label="Univerisity Name"
+        label="University Name"
+        required
         rules={[
           { required: true, message: "Please input the university name!" },
         ]}
       >
         <Input placeholder="Type University Name" />
       </Form.Item>
-      <Form.Item>
+
+      <Form.Item style={{ marginBottom: 0, textAlign: "right" }}>
+        <Button style={{ marginRight: 8 }}>Cancel</Button>
         <Button type="primary" htmlType="submit">
           Add University
         </Button>
@@ -662,13 +661,14 @@ function Univeristy() {
             </Select>
             <Button icon={<FilterOutlined />} className="border-gray-300" />
           </div>
-          <Select
-            defaultValue="allTasks"
-            style={{ width: 120 }}
-            className="border-gray-300 end-item"
+          <Button
+            icon={<UserOutlined />}
+            suffix={<UserOutlined />}
+            className="border-gray-300"
+            onClick={handleAddUniversity}
           >
-            <Option value="allTasks">All Tasks</Option>
-          </Select>
+            Add Univercity
+          </Button>
         </div>
       </div>
 

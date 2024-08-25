@@ -486,21 +486,23 @@ function ExtraProject() {
             </Select>
             <Button className="border-gray-300" />
           </div>
-          <Select
-            defaultValue="allTasks"
-            style={{ width: 120 }}
-            className="border-gray-300 end-item"
-          >
-            <Option value="allTasks">All Tasks</Option>
-          </Select>
-          <Button
-            icon={<UserOutlined />}
-            suffix={<UserOutlined />}
-            className="border-gray-300"
-            onClick={handleOpen}
-          >
-            Add Extra project
-          </Button>
+          <div>
+            <Select
+              defaultValue="allTasks"
+              style={{ width: 120 }}
+              className="pr-2 border-gray-300 end-item"
+            >
+              <Option value="allTasks">All Tasks</Option>
+            </Select>
+            <Button
+              icon={<UserOutlined />}
+              suffix={<UserOutlined />}
+              className="border-gray-300"
+              onClick={handleOpen}
+            >
+              Add Extra project
+            </Button>
+          </div>
         </div>
       </div>
 

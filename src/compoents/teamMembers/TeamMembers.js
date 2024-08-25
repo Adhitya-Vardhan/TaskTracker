@@ -15,6 +15,7 @@ import {
   Modal,
   Select,
   Switch,
+  Card,
 } from "antd";
 import {
   EditOutlined,
@@ -24,6 +25,9 @@ import {
   PlaySquareOutlined,
   UserOutlined,
   SearchOutlined,
+  EyeInvisibleOutlined,
+  EyeTwoTone,
+  CloseOutlined,
 } from "@ant-design/icons";
 import "./teamMembers.scss";
 
@@ -54,6 +58,8 @@ function TeamMembers() {
 
     getTeam();
   }, []);
+
+  const Title = Typography;
 
   const handleSuspend = async (record) => {
     let result;
@@ -108,75 +114,114 @@ function TeamMembers() {
   };
 
   const AddTeamMember = () => (
-    <Form form={form} layout="vertical" onFinish={onFinish}>
-      <Form.Item>
-        <Avatar size={64} icon={<UserOutlined />} />
-      </Form.Item>
-      <Form.Item
-        name="firstName"
-        label="First Name"
-        rules={[{ required: true, message: "Please input the first name!" }]}
-      >
-        <Input placeholder="Type First Name" />
-      </Form.Item>
-      <Form.Item
-        name="lastName"
-        label="Last Name"
-        rules={[{ required: true, message: "Please input the last name!" }]}
-      >
-        <Input placeholder="Type Last Name" />
-      </Form.Item>
-      <Form.Item name="phone" label="Contact">
-        <Input placeholder="Type Contact" />
-      </Form.Item>
-      <Form.Item
-        name="email"
-        label="E-mail"
-        rules={[{ required: true, message: "Please input the email!" }]}
-      >
-        <Input placeholder="Type E-Mail" />
-      </Form.Item>
-      <Form.Item
-        name="password"
-        label="Password"
-        rules={[{ required: true, message: "Please input the password!" }]}
-      >
-        <Input placeholder="Input Password" />
-      </Form.Item>
-      <Form.Item
-        name="role"
-        label="Role"
-        rules={[{ required: true, message: "Please select the role!" }]}
-      >
-        <Select placeholder="Select Role">
-          <Option value="Manager">Manager</Option>
-          <Option value="Sr. Team Lead">Sr. Team Lead</Option>
-          <Option value="Jr. Team Lead">Jr. Team Lead</Option>
-          <Option value="Coordinator">Coordinator</Option>
-        </Select>
-      </Form.Item>
-      <Form.Item name="attendance" label="Attendance" valuePropName="checked">
-        <Switch />
-      </Form.Item>
-      <Form.Item name="team" label="Team">
-        <AutoComplete
-          options={[
-            { value: "Alpha" },
-            { value: "Beta" },
-            { value: "Gamma" },
-            { value: "Delta" },
-          ]}
-          placeholder="Select Team"
-        />
-      </Form.Item>
-      <Form.Item>
-        <Space>
-          <Button type="primary" htmlType="submit">
+    <Card
+      title={
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Title level={4} style={{ margin: 0 }}>
             Add Team Member
-          </Button>
-        </Space>
-      </Form.Item>
-    </Form>
+          </Title>
+          <Button type="text" icon={<CloseOutlined />} />
+        </div>
+      }
+      style={{ width: 500 }}
+    >
+      <Form form={form} layout="vertical" onFinish={onFinish}>
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: 24 }}
+        >
+          <Avatar
+            size={64}
+            icon={<UserOutlined />}
+            style={{ marginRight: 16 }}
+          />
+          <Space size={8}>
+            <Form.Item
+              name="firstName"
+              label={<span style={{ color: "#ff4d4f" }}>* First Name</span>}
+              rules={[
+                { required: true, message: "Please input the first name!" },
+              ]}
+              style={{ marginBottom: 0 }}
+            >
+              <Input placeholder="Type First Name" />
+            </Form.Item>
+            <Form.Item
+              name="lastName"
+              label="Last Name"
+              style={{ marginBottom: 0 }}
+            >
+              <Input placeholder="Type Last Name" />
+            </Form.Item>
+          </Space>
+        </div>
+
+        <Form.Item name="contact" label="Contact">
+          <Input placeholder="Type Contact" />
+        </Form.Item>
+
+        <Form.Item
+          name="email"
+          label={<span style={{ color: "#ff4d4f" }}>* E-mail</span>}
+          rules={[{ required: true, message: "Please input the email!" }]}
+        >
+          <Input placeholder="Type E-Mail" />
+        </Form.Item>
+
+        <Form.Item
+          name="password"
+          label={<span style={{ color: "#ff4d4f" }}>* Password</span>}
+          rules={[{ required: true, message: "Please input the password!" }]}
+        >
+          <Input.Password
+            placeholder="Input Password"
+            iconRender={(visible) =>
+              visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+            }
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="role"
+          label={<span style={{ color: "#ff4d4f" }}>* Role</span>}
+          rules={[{ required: true, message: "Please select the role!" }]}
+        >
+          <Select placeholder="Select Role">
+            <Option value="Manager">Manager</Option>
+            <Option value="Sr. Team Lead">Sr. Team Lead</Option>
+            <Option value="Jr. Team Lead">Jr. Team Lead</Option>
+            <Option value="Coordinator">Coordinator</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          name="team"
+          label={<span style={{ color: "#ff4d4f" }}>* Team</span>}
+          rules={[{ required: true, message: "Please select the team!" }]}
+        >
+          <Select placeholder="Select Team">
+            <Option value="Alpha">Alpha</Option>
+            <Option value="Beta">Beta</Option>
+            <Option value="Gamma">Gamma</Option>
+            <Option value="Delta">Delta</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item>
+          <Space>
+            <Button>Cancel</Button>
+            <Button type="primary" htmlType="submit">
+              Add Team Member
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </Card>
   );
 
   const handleSearch = (e) => {
@@ -242,72 +287,114 @@ function TeamMembers() {
   };
 
   const EditTeamMember = () => (
-    <Form form={editForm} layout="vertical" onFinish={onEditFinish}>
-      <Form.Item
-        name="firstName"
-        label="First Name"
-        rules={[{ required: true, message: "Please input the first name!" }]}
-      >
-        <Input placeholder="Type First Name" />
-      </Form.Item>
-      <Form.Item
-        name="lastName"
-        label="Last Name"
-        rules={[{ required: true, message: "Please input the last name!" }]}
-      >
-        <Input placeholder="Type Last Name" />
-      </Form.Item>
-      <Form.Item name="phone" label="Contact">
-        <Input placeholder="Type Contact" />
-      </Form.Item>
-      <Form.Item
-        name="email"
-        label="E-mail"
-        rules={[{ required: true, message: "Please input the email!" }]}
-      >
-        <Input placeholder="Type E-Mail" />
-      </Form.Item>
-      <Form.Item
-        name="password"
-        label="Password"
-        rules={[{ required: true, message: "Please input the password!" }]}
-      >
-        <Input placeholder="Input Password" />
-      </Form.Item>
-      <Form.Item
-        name="role"
-        label="Role"
-        rules={[{ required: true, message: "Please select the role!" }]}
-      >
-        <Select placeholder="Select Role">
-          <Option value="Manager">Manager</Option>
-          <Option value="Sr. Team Lead">Sr. Team Lead</Option>
-          <Option value="Jr. Team Lead">Jr. Team Lead</Option>
-          <Option value="Coordinator">Coordinator</Option>
-        </Select>
-      </Form.Item>
-      <Form.Item name="attendance" label="Attendance" valuePropName="checked">
-        <Switch />
-      </Form.Item>
-      <Form.Item name="team" label="Team">
-        <AutoComplete
-          options={[
-            { value: "Alpha" },
-            { value: "Beta" },
-            { value: "Gamma" },
-            { value: "Delta" },
-          ]}
-          placeholder="Select Team"
-        />
-      </Form.Item>
-      <Form.Item>
-        <Space>
-          <Button type="primary" htmlType="submit">
-            Save
-          </Button>
-        </Space>
-      </Form.Item>
-    </Form>
+    <Card
+      title={
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Title level={4} style={{ margin: 0 }}>
+            Add Team Member
+          </Title>
+          <Button type="text" icon={<CloseOutlined />} />
+        </div>
+      }
+      style={{ width: 500 }}
+    >
+      <Form form={form} layout="vertical" onFinish={onEditFinish}>
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: 24 }}
+        >
+          <Avatar
+            size={64}
+            icon={<UserOutlined />}
+            style={{ marginRight: 16 }}
+          />
+          <Space size={8}>
+            <Form.Item
+              name="firstName"
+              label={<span style={{ color: "#ff4d4f" }}>* First Name</span>}
+              rules={[
+                { required: true, message: "Please input the first name!" },
+              ]}
+              style={{ marginBottom: 0 }}
+            >
+              <Input placeholder="Type First Name" />
+            </Form.Item>
+            <Form.Item
+              name="lastName"
+              label="Last Name"
+              style={{ marginBottom: 0 }}
+            >
+              <Input placeholder="Type Last Name" />
+            </Form.Item>
+          </Space>
+        </div>
+
+        <Form.Item name="contact" label="Contact">
+          <Input placeholder="Type Contact" />
+        </Form.Item>
+
+        <Form.Item
+          name="email"
+          label={<span style={{ color: "#ff4d4f" }}>* E-mail</span>}
+          rules={[{ required: true, message: "Please input the email!" }]}
+        >
+          <Input placeholder="Type E-Mail" />
+        </Form.Item>
+
+        <Form.Item
+          name="password"
+          label={<span style={{ color: "#ff4d4f" }}>* Password</span>}
+          rules={[{ required: true, message: "Please input the password!" }]}
+        >
+          <Input.Password
+            placeholder="Input Password"
+            iconRender={(visible) =>
+              visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+            }
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="role"
+          label={<span style={{ color: "#ff4d4f" }}>* Role</span>}
+          rules={[{ required: true, message: "Please select the role!" }]}
+        >
+          <Select placeholder="Select Role">
+            <Option value="Manager">Manager</Option>
+            <Option value="Sr. Team Lead">Sr. Team Lead</Option>
+            <Option value="Jr. Team Lead">Jr. Team Lead</Option>
+            <Option value="Coordinator">Coordinator</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          name="team"
+          label={<span style={{ color: "#ff4d4f" }}>* Team</span>}
+          rules={[{ required: true, message: "Please select the team!" }]}
+        >
+          <Select placeholder="Select Team">
+            <Option value="Alpha">Alpha</Option>
+            <Option value="Beta">Beta</Option>
+            <Option value="Gamma">Gamma</Option>
+            <Option value="Delta">Delta</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item>
+          <Space>
+            <Button>Cancel</Button>
+            <Button type="primary" htmlType="submit">
+              Add Team Member
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </Card>
   );
 
   const columns = [
@@ -437,6 +524,14 @@ function TeamMembers() {
             </Select>
             <Button className="border-gray-300" />
           </div>
+          <Button
+            icon={<UserOutlined />}
+            suffix={<UserOutlined />}
+            className="border-gray-300"
+            onClick={handleAddTeam}
+          >
+            Add Team Member
+          </Button>
         </div>
       </div>
 

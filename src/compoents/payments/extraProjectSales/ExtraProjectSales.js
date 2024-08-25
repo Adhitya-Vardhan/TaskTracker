@@ -20,6 +20,7 @@ import {
 } from "@ant-design/icons";
 import { useApp } from "../../../contexts/AppContext";
 import moment from "moment";
+import { hasFormSubmit } from "@testing-library/user-event/dist/utils";
 
 const calculateProjectPayments = (extraProjects, projectPayments) => {
   return extraProjects.map((project) => {
@@ -319,6 +320,7 @@ function ExtraProjectSales() {
               icon={<UserOutlined />}
               suffix={<UserOutlined />}
               className="border-gray-300"
+              onClick={handleOk}
             >
               Add Payment
             </Button>

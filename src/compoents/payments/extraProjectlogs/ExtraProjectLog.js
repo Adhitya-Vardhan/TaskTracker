@@ -321,6 +321,7 @@ function ExtraProjectLog() {
             icon={<UserOutlined />}
             suffix={<UserOutlined />}
             className="border-gray-300"
+            onClick={showModal}
           >
             Add Payment
           </Button>
@@ -328,7 +329,7 @@ function ExtraProjectLog() {
       </div>
       <Modal
         title="Add Payment"
-        open={showModal}
+        open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
       >
