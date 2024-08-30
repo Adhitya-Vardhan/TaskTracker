@@ -30,3 +30,30 @@
     }
   }
 }
+
+.ant-menu-item-selected {
+  border-radius: 0px !important;
+  border-right: 3px solid #13c2c2 !important;
+  background-color: #e6fffb !important;
+  color: #13c2c2 !important;
+}
+
+.ant-menu-submenu-title {
+  color: black !important;
+  background-color: white !important;
+  border-radius: 0px;
+}
+
+.ant-menu-item {
+  border-radius: 0px !important;
+  // background-color: white !important;
+}
+.ant-menu-title-content {
+  font-weight: 400 !important ;
+  font-size: 14px !important;
+  text-align: left;
+}
+
+.ant-menu-item :hover {
+  border-radius: 0px !important;
+}

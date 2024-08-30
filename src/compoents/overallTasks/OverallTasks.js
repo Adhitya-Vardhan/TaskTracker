@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import './overallTasks.scss'
+import ExpandIcon from "../../assets/expandIcon.svg";
+import CollapseIcon from "../../assets/collapseIcon.svg";
 import {
   Table,
   Form,
@@ -579,10 +582,10 @@ function OverallTasks() {
 
   const filteredClients = selectedCoordinator
     ? state.clients.filter((client) =>
-        client.coordinators.some(
-          (coordinator) => coordinator.name === selectedCoordinator
-        )
+      client.coordinators.some(
+        (coordinator) => coordinator.name === selectedCoordinator
       )
+    )
     : state.clients;
 
   return (
@@ -611,7 +614,7 @@ function OverallTasks() {
             <div className="flex items-center gap-2">
               <div className="bg-green-500 w-3 h-3 rounded-full"></div>
               <RangePicker className="border-gray-300" />
-              <Button type="text" style={{padding : '2px'}} className="text-blue-500">
+              <Button type="text" style={{ padding: '2px' }} className="text-blue-500">
                 <EditOutlined />
               </Button>
             </div>
@@ -656,7 +659,15 @@ function OverallTasks() {
         columns={columns}
         expandable={{
           expandedRowRender,
+          expandIcon: ({ expanded, onExpand, record }) =>
+            expanded ? (
+              <img src={CollapseIcon} onClick={e => onExpand(record, e)} />
+            ) : (
+              <img src={ExpandIcon} onClick={e => onExpand(record, e)} />
+
+            )
         }}
+
         dataSource={dataSource}
         loading={state.loading}
         size="small"
@@ -680,10 +691,6 @@ function OverallTasks() {
               <tr
                 {...props}
                 className="hover:bg-gray-50"
-                style={{
-                  paddingTop: 6,
-                  paddingBottom: 6,
-                }}
               />
             ),
             cell: (props) => (

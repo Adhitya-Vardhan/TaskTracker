@@ -83,3 +83,23 @@ $bg-color: #fff;
     }
   }
 }
+
+
+.add-project-model {
+  position: relative !important;
+  background-color: red;
+}
+.add-project-model::before {
+  z-index: 10 !important;
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: 16px !important; 
+  padding: 10px !important; 
+  background:linear-gradient(45deg,#189AB0,#7BD75B) !important; 
+  -webkit-mask: 
+     linear-gradient(#fff 0 0) content-box, 
+     linear-gradient(#fff 0 0) !important;
+  -webkit-mask-composite: xor !important;
+          mask-composite: exclude !important; 
+}

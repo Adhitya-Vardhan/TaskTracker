@@ -14,6 +14,7 @@ import { useApp } from "../../contexts/AppContext";
 import { GraduationCap, MonitorSmartphone } from "lucide-react";
 import "./sideBar.scss";
 function SideBar({ onMenuClick }) {
+  const [selectedKey, setSelectedKey] = useState("home");
   const { addSheet, state, setActiveSheet } = useApp();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
@@ -161,6 +162,7 @@ function SideBar({ onMenuClick }) {
 
   const handleMenuClick = (e) => {
     onMenuClick(e.key);
+    setSelectedKey(e.key);
   };
 
   return (
@@ -187,9 +189,12 @@ function SideBar({ onMenuClick }) {
 
         <Menu
           theme="light"
-          defaultSelectedKeys={["home"]}
+          selectedKeys={[selectedKey]}
           mode="inline"
-          items={items}
+          items={items.map(item => ({
+            ...item,
+            className: item.key === selectedKey ? '' : 'ant-menu-item-not-selected'
+          }))}
           onClick={handleMenuClick}
           style={{ border: "none" }}
         />
@@ -197,12 +202,12 @@ function SideBar({ onMenuClick }) {
           className="sheet-list"
           style={{ marginTop: "auto", padding: "16px" }}
         >
-          <Input
+          {/* <Input
             placeholder="Search Sheets"
             prefix={<SearchOutlined />}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ marginBottom: "10px" }}
-          />
+          /> */}
           <List
             dataSource={state.weeks}
             renderItem={(item) => (

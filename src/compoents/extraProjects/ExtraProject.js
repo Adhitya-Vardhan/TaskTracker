@@ -550,9 +550,13 @@ function ExtraProject() {
         style={{ marginTop: 20 }}
         size="small"
       />
+      <div className="add-project-model">
       <Modal open={isModalOpen} onCancel={handleClose} footer={null}>
-        <AddExtraProjectForm />
+        <div className="add-project-model">
+          <AddExtraProjectForm />
+        </div>
       </Modal>
+      </div>
       <Modal
         title="Edit Note"
         open={noteModalOpen}
