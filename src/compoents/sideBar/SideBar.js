@@ -12,7 +12,7 @@ import {
 import companyLogo from "../../assets/HeaderLogo.jpg";
 import { useApp } from "../../contexts/AppContext";
 import { GraduationCap, MonitorSmartphone } from "lucide-react";
-import './sideBar.scss';
+import "./sideBar.scss";
 function SideBar({ onMenuClick }) {
   const { addSheet, state, setActiveSheet } = useApp();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -57,6 +57,21 @@ function SideBar({ onMenuClick }) {
         {
           key: "extraProjects",
           label: "Extra Projects",
+        },
+      ],
+    },
+    {
+      key: "grades",
+      label: "Grades",
+      icon: <FileOutlined />,
+      children: [
+        {
+          key: "finalGrades",
+          label: "Final Grades",
+        },
+        {
+          key: "weekGrades",
+          label: "Week Grades",
         },
       ],
     },
@@ -150,7 +165,6 @@ function SideBar({ onMenuClick }) {
 
   return (
     <>
-
       <div
         className="sidebar"
         style={{
@@ -170,6 +184,7 @@ function SideBar({ onMenuClick }) {
           </div>
         </div>
         {contextHolder}
+
         <Menu
           theme="light"
           defaultSelectedKeys={["home"]}
@@ -178,7 +193,7 @@ function SideBar({ onMenuClick }) {
           onClick={handleMenuClick}
           style={{ border: "none" }}
         />
-        {/* <div
+        <div
           className="sheet-list"
           style={{ marginTop: "auto", padding: "16px" }}
         >
@@ -214,7 +229,7 @@ function SideBar({ onMenuClick }) {
               marginBottom: "10px",
             }}
           />
-        </div> */}
+        </div>
 
         <Modal
           title="ADD SHEET NAME"
