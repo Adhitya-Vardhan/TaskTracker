@@ -18,7 +18,6 @@ import {
 import { useApp } from "../../contexts/AppContext";
 import { Timestamp } from "firebase/firestore";
 import {
-  UploadOutlined,
   UserOutlined,
   FileTextOutlined,
   BellOutlined,
@@ -178,7 +177,7 @@ function ExtraProject() {
         >
           <TextArea
             placeholder="Write your note here"
-            rows={4}
+            rows={2}
             maxLength={100}
             showCount
           />

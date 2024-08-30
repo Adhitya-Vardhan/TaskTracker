@@ -143,7 +143,12 @@ function TeamMembers() {
           <Space size={8}>
             <Form.Item
               name="firstName"
-              label={<span style={{ color: "#ff4d4f" }}>* First Name</span>}
+              label={
+                <>
+                  <span style={{ color: "#ff4d4f" }}>* </span>
+                  First Name
+                </>
+              }
               rules={[
                 { required: true, message: "Please input the first name!" },
               ]}
@@ -167,7 +172,7 @@ function TeamMembers() {
 
         <Form.Item
           name="email"
-          label={<span style={{ color: "#ff4d4f" }}>* E-mail</span>}
+          label={<>E-mail</>}
           rules={[{ required: true, message: "Please input the email!" }]}
         >
           <Input placeholder="Type E-Mail" />
