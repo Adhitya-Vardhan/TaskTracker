@@ -379,17 +379,20 @@ function Univeristy() {
       title: "University Id",
       dataIndex: "id",
       key: "id",
+      width: "20%",
       editable: false,
     },
     {
       title: "University Name",
       dataIndex: "name",
       key: "name",
+      width: "50%",
       editable: true,
     },
     {
       title: "Actions",
       key: "actions",
+      width: "30%",
       render: (_, record) => {
         const editable = isEditing(record);
         return state.universities.length >= 1 ? (
@@ -628,9 +631,7 @@ function Univeristy() {
                   }}
                 />
               ),
-              cell: (props) => (
-                <td {...props} className="border-b border-gray-200" />
-              ),
+              cell: EditableCell,
             },
           }}
           size="small"
@@ -726,9 +727,6 @@ function Univeristy() {
           }}
           components={{
             header: {
-              body: {
-                cell: EditableCell,
-              },
               cell: (props) => (
                 <th
                   {...props}
@@ -744,9 +742,7 @@ function Univeristy() {
             },
             body: {
               row: (props) => <tr {...props} className="hover:bg-gray-50" />,
-              cell: (props) => (
-                <td {...props} className="border-b border-gray-200" />
-              ),
+              cell: EditableCell,
             },
           }}
           size="small"
