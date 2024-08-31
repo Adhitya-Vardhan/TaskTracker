@@ -29,6 +29,8 @@ import {
 } from "@ant-design/icons";
 import "./university.scss";
 import { useApp } from "../../contexts/AppContext";
+import ExpandIcon from "../../assets/expandIcon.svg";
+import CollapseIcon from "../../assets/collapseIcon.svg";
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -107,38 +109,78 @@ function Univeristy() {
     }
   };
 
+  const formStyle = {
+    padding: "24px",
+    background: "white",
+    borderRadius: "8px",
+  };
+
+  const titleStyle = {
+    fontSize: "24px",
+    fontWeight: "bold",
+    marginBottom: "24px",
+  };
+
+  const requiredLabelStyle = {
+    "::before": {
+      display: "inline-block",
+      marginRight: "4px",
+      color: "#ff4d4f",
+      fontSize: "14px",
+      fontFamily: "SimSun, sans-serif",
+      lineHeight: 1,
+      content: '"*"',
+    },
+  };
+
+  const inputStyle = {
+    borderRadius: "4px",
+  };
+
+  const buttonStyle = {
+    borderRadius: "4px",
+  };
+
+  const primaryButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: "#5BCACA",
+    borderColor: "#5BCACA",
+  };
+
   const AddUniversityForm = () => (
-    <Form form={form} layout="vertical" onFinish={onFinish}>
-      <Text type="secondary">
-        Please Provide a Unique ID, ID cannot be edited once added.
-      </Text>
-
-      <Divider />
+    <Form
+      layout="vertical"
+      name="add_extra_project"
+      onFinish={onFinish}
+      style={formStyle}
+    >
+      <h2 style={titleStyle}>Add University</h2>
 
       <Form.Item
-        name="id"
-        label="University Id"
-        rules={[{ required: true, message: "Please input the university ID!" }]}
+        name="projectName"
+        label={<span style={requiredLabelStyle}>Univercity Name</span>}
+        rules={[{ required: true, message: "Please give univercity name" }]}
       >
-        <Input placeholder="Please enter unique id" />
+        <Input placeholder="Type project name here" style={inputStyle} />
       </Form.Item>
 
       <Form.Item
-        name="name"
-        label="University Name"
-        required
-        rules={[
-          { required: true, message: "Please input the university name!" },
-        ]}
+        name="projectName"
+        label={<span style={requiredLabelStyle}>Univercity ID</span>}
+        rules={[{ required: true, message: "Please give univercity ID" }]}
       >
-        <Input placeholder="Type University Name" />
+        <Input placeholder="Type project name here" style={inputStyle} />
       </Form.Item>
 
-      <Form.Item style={{ marginBottom: 0, textAlign: "right" }}>
-        <Button style={{ marginRight: 8 }}>Cancel</Button>
-        <Button type="primary" htmlType="submit">
-          Add University
-        </Button>
+      <Form.Item>
+        <div
+          style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}
+        >
+          <Button style={buttonStyle}>Cancel</Button>
+          <Button type="primary" htmlType="submit" style={primaryButtonStyle}>
+            Create Task
+          </Button>
+        </div>
       </Form.Item>
     </Form>
   );
@@ -559,6 +601,9 @@ function Univeristy() {
           pagination={false}
           components={{
             header: {
+              body: {
+                cell: EditableCell,
+              },
               cell: (props) => (
                 <th
                   {...props}
@@ -584,14 +629,7 @@ function Univeristy() {
                 />
               ),
               cell: (props) => (
-                <td
-                  {...props}
-                  className="border-b border-gray-200"
-                  style={{
-                    paddingTop: 6,
-                    paddingBottom: 6,
-                  }}
-                />
+                <td {...props} className="border-b border-gray-200" />
               ),
             },
           }}
@@ -664,7 +702,7 @@ function Univeristy() {
           <Button
             icon={<UserOutlined />}
             suffix={<UserOutlined />}
-            className="border-gray-300"
+            className="bg-[#5DDBD3] text-white"
             onClick={handleAddUniversity}
           >
             Add Univercity
@@ -679,10 +717,18 @@ function Univeristy() {
           pagination={false}
           expandable={{
             expandedRowRender,
-            defaultExpandedRowKeys: ["0"],
+            expandIcon: ({ expanded, onExpand, record }) =>
+              expanded ? (
+                <img src={CollapseIcon} onClick={(e) => onExpand(record, e)} />
+              ) : (
+                <img src={ExpandIcon} onClick={(e) => onExpand(record, e)} />
+              ),
           }}
           components={{
             header: {
+              body: {
+                cell: EditableCell,
+              },
               cell: (props) => (
                 <th
                   {...props}
@@ -697,25 +743,9 @@ function Univeristy() {
               ),
             },
             body: {
-              row: (props) => (
-                <tr
-                  {...props}
-                  className="hover:bg-gray-50"
-                  style={{
-                    paddingTop: 6,
-                    paddingBottom: 6,
-                  }}
-                />
-              ),
+              row: (props) => <tr {...props} className="hover:bg-gray-50" />,
               cell: (props) => (
-                <td
-                  {...props}
-                  className="border-b border-gray-200"
-                  style={{
-                    paddingTop: 6,
-                    paddingBottom: 6,
-                  }}
-                />
+                <td {...props} className="border-b border-gray-200" />
               ),
             },
           }}
@@ -723,7 +753,6 @@ function Univeristy() {
         />
       </Form>
       <Modal
-        title="Add University"
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}

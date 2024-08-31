@@ -186,34 +186,78 @@ const OverallSales = () => {
     }
   };
 
+  const formStyle = {
+    padding: "24px",
+    background: "white",
+    borderRadius: "8px",
+  };
+
+  const titleStyle = {
+    fontSize: "24px",
+    fontWeight: "bold",
+    marginBottom: "24px",
+  };
+
+  const requiredLabelStyle = {
+    "::before": {
+      display: "inline-block",
+      marginRight: "4px",
+      color: "#ff4d4f",
+      fontSize: "14px",
+      fontFamily: "SimSun, sans-serif",
+      lineHeight: 1,
+      content: '"*"',
+    },
+  };
+
+  const inputStyle = {
+    borderRadius: "4px",
+  };
+
+  const buttonStyle = {
+    borderRadius: "4px",
+  };
+
+  const primaryButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: "#5BCACA",
+    borderColor: "#5BCACA",
+  };
+
   const AddBankAccountForm = () => (
     <Form
       layout="vertical"
+      name="add_extra_project"
       onFinish={handleAddBank}
-      style={{ maxWidth: "600px", margin: "auto" }}
+      style={formStyle}
     >
+      <h2 style={titleStyle}>Add Extra Project</h2>
+
       <Form.Item
-        name="bankAccountName"
-        label="Bank Account Name"
-        rules={[
-          { required: true, message: "Please input the bank account name!" },
-        ]}
+        name="projectName"
+        label={<span style={requiredLabelStyle}>Bank Account Name</span>}
+        rules={[{ required: true, message: "Please input the project name!" }]}
       >
-        <Input />
+        <Input placeholder="Type project name here" style={inputStyle} />
       </Form.Item>
+
       <Form.Item
-        name="accountNumber"
-        label="Account Number"
-        rules={[
-          { required: true, message: "Please input the account number!" },
-        ]}
+        name="projectName"
+        label={<span style={requiredLabelStyle}>Account Number</span>}
+        rules={[{ required: true, message: "Please input the project name!" }]}
       >
-        <Input />
+        <Input placeholder="Type project name here" style={inputStyle} />
       </Form.Item>
+
       <Form.Item>
-        <Button type="primary" htmlType="submit">
-          Add Bank Account
-        </Button>
+        <div
+          style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}
+        >
+          <Button style={buttonStyle}>Cancel</Button>
+          <Button type="primary" htmlType="submit" style={primaryButtonStyle}>
+            Create Task
+          </Button>
+        </div>
       </Form.Item>
     </Form>
   );
@@ -295,16 +339,7 @@ const OverallSales = () => {
                 ),
               },
               body: {
-                row: (props) => (
-                  <tr
-                    {...props}
-                    className="hover:bg-gray-50"
-                    style={{
-                      paddingTop: 6,
-                      paddingBottom: 6,
-                    }}
-                  />
-                ),
+                row: (props) => <tr {...props} className="hover:bg-gray-50" />,
                 cell: (props) => (
                   <td
                     {...props}
@@ -324,12 +359,7 @@ const OverallSales = () => {
           />
         </div>
       </div>
-      <Modal
-        title="Add Bank Account"
-        open={isModalVisible}
-        onCancel={handleCancel}
-        footer={null}
-      >
+      <Modal open={isModalVisible} onCancel={handleCancel} footer={null}>
         <AddBankAccountForm />
       </Modal>
     </div>

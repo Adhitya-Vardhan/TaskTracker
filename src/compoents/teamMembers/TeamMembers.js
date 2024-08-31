@@ -114,22 +114,12 @@ function TeamMembers() {
   };
 
   const AddTeamMember = () => (
-    <Card
-      title={
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Title level={4} style={{ margin: 0 }}>
-            Add Team Member
-          </Title>
-          <Button type="text" icon={<CloseOutlined />} />
-        </div>
-      }
-      style={{ width: 500 }}
+    <div
+      style={{
+        height: "618px",
+        overflowY: "auto",
+        padding: "0 24px 24px 24px",
+      }}
     >
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <div
@@ -143,12 +133,7 @@ function TeamMembers() {
           <Space size={8}>
             <Form.Item
               name="firstName"
-              label={
-                <>
-                  <span style={{ color: "#ff4d4f" }}>* </span>
-                  First Name
-                </>
-              }
+              label="First Name"
               rules={[
                 { required: true, message: "Please input the first name!" },
               ]}
@@ -172,7 +157,7 @@ function TeamMembers() {
 
         <Form.Item
           name="email"
-          label={<>E-mail</>}
+          label="E-mail"
           rules={[{ required: true, message: "Please input the email!" }]}
         >
           <Input placeholder="Type E-Mail" />
@@ -180,20 +165,15 @@ function TeamMembers() {
 
         <Form.Item
           name="password"
-          label={<span style={{ color: "#ff4d4f" }}>* Password</span>}
+          label="Password"
           rules={[{ required: true, message: "Please input the password!" }]}
         >
-          <Input.Password
-            placeholder="Input Password"
-            iconRender={(visible) =>
-              visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-            }
-          />
+          <Input.Password placeholder="Input Password" />
         </Form.Item>
 
         <Form.Item
           name="role"
-          label={<span style={{ color: "#ff4d4f" }}>* Role</span>}
+          label="Role"
           rules={[{ required: true, message: "Please select the role!" }]}
         >
           <Select placeholder="Select Role">
@@ -206,7 +186,7 @@ function TeamMembers() {
 
         <Form.Item
           name="team"
-          label={<span style={{ color: "#ff4d4f" }}>* Team</span>}
+          label="Team"
           rules={[{ required: true, message: "Please select the team!" }]}
         >
           <Select placeholder="Select Team">
@@ -219,14 +199,14 @@ function TeamMembers() {
 
         <Form.Item>
           <Space>
-            <Button>Cancel</Button>
+            <Button onClick={() => form.resetFields()}>Cancel</Button>
             <Button type="primary" htmlType="submit">
               Add Team Member
             </Button>
           </Space>
         </Form.Item>
       </Form>
-    </Card>
+    </div>
   );
 
   const handleSearch = (e) => {
@@ -589,6 +569,13 @@ function TeamMembers() {
         onCancel={() => setIsModalVisible(false)}
         footer={null}
         centered
+        bodyStyle={{
+          padding: "40px 0px 0px 0px",
+          borderRadius: "16px 0px 0px 0px",
+          border: "2px solid #f0f0f0",
+          borderBottom: "none",
+          borderRight: "none",
+        }}
       >
         <AddTeamMember />
       </Modal>
