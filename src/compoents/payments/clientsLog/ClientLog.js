@@ -18,13 +18,14 @@ import {
   FilterOutlined,
   SearchOutlined,
   UserOutlined,
+  PlusCircleOutlined,
 } from "@ant-design/icons";
 
 import moment from "moment";
 import { useApp } from "../../../contexts/AppContext";
 
 const { Option } = Select;
-
+const { TextArea } = Input;
 function ClientLog() {
   const {
     state,
@@ -86,89 +87,108 @@ function ClientLog() {
       console.error("Unexpected error:", error);
     }
   };
-
+  const [form] = Form.useForm();
   const AddPayment = () => (
-    <Form layout="vertical" onFinish={handleAddPayment}>
-      <Form.Item
-        name="username"
-        label="Username"
-        rules={[{ required: true, message: "Please input the username!" }]}
-      >
-        <Input placeholder="Type Client Username" />
-      </Form.Item>
-
-      <Form.Item
-        name="university"
-        label="University"
-        rules={[
-          { required: true, message: "Please input the university name!" },
-        ]}
-      >
-        <AutoComplete
-          options={universityOptions}
-          placeholder="Type University Name"
-          filterOption={(inputValue, option) =>
-            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-          }
-        />
-      </Form.Item>
-
-      <Form.Item
-        name="amount"
-        label="Amount"
-        rules={[
-          { required: true, message: "Please input the payment amount!" },
-        ]}
-      >
-        <Input placeholder="Type Payment Amount" />
-      </Form.Item>
-
-      <Form.Item
-        name="currency"
-        label="Currency"
-        rules={[{ required: true, message: "Please select the currency!" }]}
-      >
-        <Select placeholder="USD">
-          <Option value="USD">USD</Option>
-          <Option value="EUR">EUR</Option>
-          <Option value="GBP">GBP</Option>
-        </Select>
-      </Form.Item>
-
-      <Form.Item
-        name="transactionId"
-        label="Transaction ID"
-        rules={[
-          { required: true, message: "Please input the transaction ID!" },
-        ]}
-      >
-        <Input placeholder="Type Transaction ID" />
-      </Form.Item>
-
-      <Form.Item
-        name="bankAccount"
-        label="Bank Account"
-        rules={[{ required: true, message: "Please select the bank account!" }]}
-      >
-        <Select placeholder="Select Bank Account">
-          <Option value="account1">Account 1</Option>
-          <Option value="account2">Account 2</Option>
-          <Option value="account3">Account 3</Option>
-        </Select>
-      </Form.Item>
-
-      <Form.Item name="note" label="Note">
-        <Input.TextArea placeholder="Add a Note..." />
-      </Form.Item>
-
-      <Form.Item>
-        <Button onClick={handleCancel} style={{ marginRight: "8px" }}>
-          Cancel
-        </Button>
-        <Button type="primary" htmlType="submit">
-          Add Payment
-        </Button>
-      </Form.Item>
+    <Form
+      form={form}
+      layout="vertical"
+      name="form_in_modal"
+      initialValues={{ currency: "USD" }}
+      onFinish={handleAddPayment}
+    >
+      <h2 className="text-2xl border-b border-slate-200 pb-3 font-bold">
+        Add Payment
+      </h2>
+      <div className="overflow-y-scroll h-[458px] px-4">
+        <Form.Item
+          className="text-xs mb-4"
+          name="projectName"
+          label="Username"
+          rules={[
+            { required: true, message: "Please input the project name!" },
+          ]}
+        >
+          <Input className="rounded-sm " placeholder="Type Client Username" />
+        </Form.Item>
+        <Form.Item
+          className="text-xs mb-4"
+          name="university"
+          label="University"
+          rules={[
+            { required: true, message: "Please input the project name!" },
+          ]}
+        >
+          <Input className="rounded-sm " placeholder="Type University Name" />
+        </Form.Item>
+        <hr />
+        <div className="flex justify-between gap-3 mt-4">
+          <Form.Item
+            className="mb-0 w-full"
+            name="amount"
+            label="Amount"
+            rules={[
+              { required: true, message: "Please input the payment amount!" },
+            ]}
+          >
+            <Input
+              className="w-full"
+              placeholder="Type Payment Amount"
+              type="number"
+            />
+          </Form.Item>
+          <Form.Item
+            className="mb-0"
+            name="currency"
+            label="Currency"
+            rules={[{ required: true, message: "Please select the currency!" }]}
+          >
+            <Select>
+              <Option value="USD">USD</Option>
+              <Option value="EUR">EUR</Option>
+              <Option value="INR">INR</Option>
+              {/* Add more currency options as needed */}
+            </Select>
+          </Form.Item>
+        </div>
+        <Form.Item
+          className="mt-3 mb-0"
+          name="transactionId"
+          label="Transaction ID"
+        >
+          <Input placeholder="Type Transaction ID" />
+        </Form.Item>
+        <Form.Item
+          className="mt-3 mb-3"
+          name="bankAccount"
+          label="Bank Account"
+          rules={[
+            { required: true, message: "Please select the bank account!" },
+          ]}
+        >
+          <Select placeholder="Select Bank Account">
+            <Option value="ICICI - 0769">ICICI - 0769</Option>
+            <Option value="Citibank - 1234">Citibank - 1234</Option>
+            <Option value="Chase - 5678">Chase - 5678</Option>
+            <Option value="Bank of America - 9101">
+              Bank of America - 9101
+            </Option>
+          </Select>
+        </Form.Item>
+        <hr />
+        <Form.Item className="mt-3 mb-3" name="note" label="Note">
+          <TextArea placeholder="Add a Note..." rows={4} />
+        </Form.Item>
+        <Form.Item className="m-0">
+          <div className="flex gap-2 justify-end">
+            <Button onClick={handleCancel} className="rounded-sm">
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit" style={primaryButtonStyle}>
+              Add Payment
+            </Button>
+          </div>
+        </Form.Item>
+      </div>
     </Form>
   );
 
@@ -291,6 +311,9 @@ function ClientLog() {
       onFinish={handleVerify}
       style={{ maxWidth: "600px", margin: "auto" }}
     >
+      <h2 className="text-2xl border-b border-slate-200 pb-3 font-bold">
+        Verify Payment
+      </h2>
       <Form.Item
         name="transactionId"
         label="Transaction ID"
@@ -298,15 +321,28 @@ function ClientLog() {
           { required: true, message: "Please input the transaction ID!" },
         ]}
       >
-        <Input />
+        <Input placeholder="Type Transaction ID" />
       </Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit">
-          Verify
-        </Button>
+        <Form.Item className="m-0">
+          <div className="flex gap-2 justify-end">
+            <Button onClick={handleCancel} className="rounded-sm">
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit" style={primaryButtonStyle}>
+              Verify
+            </Button>
+          </div>
+        </Form.Item>
       </Form.Item>
     </Form>
   );
+
+  const primaryButtonStyle = {
+    backgroundColor: "#5BCACA",
+    borderColor: "#5BCACA",
+    borderRadius: "4px",
+  };
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -351,12 +387,12 @@ function ClientLog() {
             <Button icon={<FilterOutlined />} className="border-gray-300" />
           </div>
           <Button
-            icon={<UserOutlined />}
-            suffix={<UserOutlined />}
-            className="border-gray-300"
+            type="primary"
             onClick={showModal}
+            style={primaryButtonStyle}
+            icon={<PlusCircleOutlined />}
           >
-            Add Extra Project
+            Add Payment
           </Button>
         </div>
       </div>
@@ -404,24 +440,13 @@ function ClientLog() {
         columns={columns}
         style={{ marginTop: 20 }}
       />
-      <Modal
-        title="Add Payment"
-        open={isModalVisible}
-        onCancel={handleCancel}
-        footer={null}
-      >
+      <Modal open={isModalVisible} onCancel={handleCancel} footer={null}>
         <AddPayment />
       </Modal>
       <Modal
-        title="Verify Payment"
         open={isVerifyModalVisible}
         onCancel={handleVerifyCancel}
         footer={null}
-        bodyStyle={{
-          maxHeight: "calc(100vh - 200px)",
-          overflowY: "auto",
-        }}
-        width="50%"
       >
         <VerifyPayment />
       </Modal>

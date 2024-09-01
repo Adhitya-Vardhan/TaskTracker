@@ -26,6 +26,7 @@ import {
   DownOutlined,
   FilterOutlined,
   FileTextOutlined,
+  BookFilled,
 } from "@ant-design/icons";
 import "./university.scss";
 import { useApp } from "../../contexts/AppContext";
@@ -110,7 +111,7 @@ function Univeristy() {
   };
 
   const formStyle = {
-    padding: "24px",
+    // padding: "24px",
     background: "white",
     borderRadius: "8px",
   };
@@ -118,7 +119,6 @@ function Univeristy() {
   const titleStyle = {
     fontSize: "24px",
     fontWeight: "bold",
-    marginBottom: "24px",
   };
 
   const requiredLabelStyle = {
@@ -154,23 +154,25 @@ function Univeristy() {
       onFinish={onFinish}
       style={formStyle}
     >
-      <h2 style={titleStyle}>Add University</h2>
-
+      <h2 style={titleStyle} className="mb-0">
+        Add University
+      </h2>
+      <hr className="my-4" />
       <Form.Item
         name="projectName"
-        label={<span style={requiredLabelStyle}>Univercity Name</span>}
-        rules={[{ required: true, message: "Please give univercity name" }]}
+        label={<span style={requiredLabelStyle}>University Name</span>}
+        rules={[{ required: true, message: "Please give university name" }]}
       >
-        <Input placeholder="Type project name here" style={inputStyle} />
+        <Input placeholder="Type University Name " style={inputStyle} />
       </Form.Item>
 
-      <Form.Item
+      {/* <Form.Item
         name="projectName"
         label={<span style={requiredLabelStyle}>Univercity ID</span>}
         rules={[{ required: true, message: "Please give univercity ID" }]}
       >
         <Input placeholder="Type project name here" style={inputStyle} />
-      </Form.Item>
+      </Form.Item> */}
 
       <Form.Item>
         <div
@@ -178,7 +180,7 @@ function Univeristy() {
         >
           <Button style={buttonStyle}>Cancel</Button>
           <Button type="primary" htmlType="submit" style={primaryButtonStyle}>
-            Create Task
+            Add University
           </Button>
         </div>
       </Form.Item>
@@ -701,12 +703,11 @@ function Univeristy() {
             <Button icon={<FilterOutlined />} className="border-gray-300" />
           </div>
           <Button
-            icon={<UserOutlined />}
-            suffix={<UserOutlined />}
+            icon={<BookFilled />}
             className="bg-[#5DDBD3] text-white"
             onClick={handleAddUniversity}
           >
-            Add Univercity
+            Add University
           </Button>
         </div>
       </div>

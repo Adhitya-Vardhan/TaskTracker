@@ -15,6 +15,7 @@ import {
   UserOutlined,
   SearchOutlined,
   FilterOutlined,
+  PlusCircleOutlined,
 } from "@ant-design/icons";
 import { useApp } from "../../../contexts/AppContext";
 import moment from "moment";
@@ -41,6 +42,16 @@ function ExtraProjectLog() {
     fetchExtraProjects();
     fetchProjectPayments();
   }, []);
+
+  const buttonStyle = {
+    borderRadius: "4px",
+  };
+
+  const primaryButtonStyle = {
+    ...buttonStyle,
+    backgroundColor: "#5BCACA",
+    borderColor: "#5BCACA",
+  };
 
   console.log(state.projectPayments);
   const showModal = () => {
@@ -94,55 +105,77 @@ function ExtraProjectLog() {
       initialValues={{ currency: "USD" }}
       onFinish={handleAddPayment}
     >
+      <h2 className="text-2xl border-b border-slate-200 pb-3 font-bold">
+        Add Extra Project Payment
+      </h2>
       <Form.Item
+        className="text-xs mb-4"
         name="projectName"
         label="Project Name"
         rules={[{ required: true, message: "Please input the project name!" }]}
       >
-        <Input placeholder="Type Client Username" />
+        <Input className="rounded-sm " placeholder="Type Client Username" />
       </Form.Item>
+      <hr />
+      <div className="flex justify-between gap-3 mt-4">
+        <Form.Item
+          className="mb-0 w-full"
+          name="amount"
+          label="Amount"
+          rules={[
+            { required: true, message: "Please input the payment amount!" },
+          ]}
+        >
+          <Input
+            className="w-full"
+            placeholder="Type Payment Amount"
+            type="number"
+          />
+        </Form.Item>
+        <Form.Item
+          className="mb-0"
+          name="currency"
+          label="Currency"
+          rules={[{ required: true, message: "Please select the currency!" }]}
+        >
+          <Select>
+            <Option value="USD">USD</Option>
+            <Option value="EUR">EUR</Option>
+            <Option value="INR">INR</Option>
+            {/* Add more currency options as needed */}
+          </Select>
+        </Form.Item>
+      </div>
       <Form.Item
-        name="amount"
-        label="Amount"
-        rules={[
-          { required: true, message: "Please input the payment amount!" },
-        ]}
+        className="mt-3 mb-0"
+        name="transactionId"
+        label="Transaction ID"
       >
-        <Input placeholder="Type Payment Amount" type="number" />
-      </Form.Item>
-      <Form.Item
-        name="currency"
-        label="Currency"
-        rules={[{ required: true, message: "Please select the currency!" }]}
-      >
-        <Select>
-          <Option value="USD">USD</Option>
-          <Option value="EUR">EUR</Option>
-          <Option value="INR">INR</Option>
-          {/* Add more currency options as needed */}
-        </Select>
-      </Form.Item>
-      <Form.Item name="transactionId" label="Transaction ID">
         <Input placeholder="Type Transaction ID" />
       </Form.Item>
       <Form.Item
+        className="mt-3 mb-3"
         name="bankAccount"
         label="Bank Account"
         rules={[{ required: true, message: "Please select the bank account!" }]}
       >
-        <Select>
+        <Select placeholder="Select Bank Account">
           <Option value="ICICI - 0769">ICICI - 0769</Option>
           <Option value="Citibank - 1234">Citibank - 1234</Option>
           <Option value="Chase - 5678">Chase - 5678</Option>
           <Option value="Bank of America - 9101">Bank of America - 9101</Option>
         </Select>
       </Form.Item>
-      <Form.Item name="note" label="Note">
+      <hr />
+      <Form.Item className="mt-3 mb-3" name="note" label="Note">
         <TextArea placeholder="Add a Note..." rows={4} />
       </Form.Item>
-      <Form.Item>
-        <div style={{ textAlign: "right" }}>
-          <Button type="primary" htmlType="submit">
+      <Form.Item className="m-0">
+        <div className="flex gap-2 justify-end">
+          <Button onClick={handleCancel} style={buttonStyle}>
+            Cancel
+          </Button>
+          <Button type="primary" htmlType="submit" style={primaryButtonStyle}>
             Add Payment
           </Button>
         </div>
@@ -205,6 +238,9 @@ function ExtraProjectLog() {
       onFinish={handleVerify}
       style={{ maxWidth: "600px", margin: "auto" }}
     >
+      <h2 className="text-2xl border-b border-slate-200 pb-3 font-bold">
+        Verify Payment
+      </h2>
       <Form.Item
         name="transactionId"
         label="Transaction ID"
@@ -212,12 +248,19 @@ function ExtraProjectLog() {
           { required: true, message: "Please input the transaction ID!" },
         ]}
       >
-        <Input />
+        <Input placeholder="Type Transaction ID" />
       </Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit">
-          Verify
-        </Button>
+        <Form.Item className="m-0">
+          <div className="flex gap-2 justify-end">
+            <Button onClick={handleCancel} style={buttonStyle}>
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit" style={primaryButtonStyle}>
+              Verify
+            </Button>
+          </div>
+        </Form.Item>
       </Form.Item>
     </Form>
   );
@@ -287,13 +330,15 @@ function ExtraProjectLog() {
       <div className="flex flex-col gap-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <span className="text-3xl font-medium">ExtraProjectLog</span>
+            <span className="text-3xl font-medium">
+              Extra Projects Payment Log
+            </span>
             <span className="text-gray-200">|</span>
           </div>
 
           <div className="flex justify-end">
             <Input
-              placeholder="Search by Assignee or Client Name"
+              placeholder="Search"
               suffix={
                 <div className="border-l-2 p-1">
                   <SearchOutlined />
@@ -318,25 +363,19 @@ function ExtraProjectLog() {
             <Button icon={<FilterOutlined />} className="border-gray-300" />
           </div>
           <Button
-            icon={<UserOutlined />}
-            suffix={<UserOutlined />}
-            className="border-gray-300"
+            type="primary"
             onClick={showModal}
+            style={primaryButtonStyle}
+            icon={<PlusCircleOutlined />}
           >
             Add Payment
           </Button>
         </div>
       </div>
-      <Modal
-        title="Add Payment"
-        open={isModalVisible}
-        onCancel={handleCancel}
-        footer={null}
-      >
+      <Modal open={isModalVisible} onCancel={handleCancel} footer={null}>
         <AddPayment />
       </Modal>
       <Modal
-        title="Verify Payment"
         open={isVerifyModalVisible}
         onCancel={handleVerifyCancel}
         footer={null}

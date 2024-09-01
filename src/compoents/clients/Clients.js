@@ -434,22 +434,11 @@ function Clients() {
   };
 
   const EditClientForm = () => (
-    <Card
-      title={
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <span>Edit Client Profile</span>
-          <Button type="text" icon={<CloseOutlined />} />
-        </div>
-      }
-      style={{ width: 400 }}
-    >
-      <Form form={form} layout="vertical" onFinish={onEditFinish}>
+    <Form form={form} layout="vertical" onFinish={onEditFinish}>
+      <h2 className="text-2xl border-b border-slate-200 pb-3 font-bold">
+        Edit Client
+      </h2>
+      <div className="h-[458px] overflow-y-scroll p-4">
         <Form.Item
           name="name"
           label="Name"
@@ -506,17 +495,16 @@ function Clients() {
             </Select>
           </Form.Item>
         </Space>
-
-        <Form.Item>
-          <Space>
-            <Button>Cancel</Button>
-            <Button type="primary" htmlType="submit">
-              Save Changes
-            </Button>
-          </Space>
-        </Form.Item>
-      </Form>
-    </Card>
+      </div>
+      <Form.Item className="flex justify-end mt-2 mr-4">
+        <Space>
+          <Button>Cancel</Button>
+          <Button type="primary" htmlType="submit" style={primaryButtonStyle}>
+            Save Changes
+          </Button>
+        </Space>
+      </Form.Item>
+    </Form>
   );
 
   const handleSubjectCompleted = async (record, id) => {
@@ -567,7 +555,11 @@ function Clients() {
   };
 
   const handleDeleteSubject = () => {};
-
+  const primaryButtonStyle = {
+    borderRadius: "4px",
+    backgroundColor: "#5BCACA",
+    borderColor: "#5BCACA",
+  };
   const expandedRowRender = (client) => {
     return (
       <div>
@@ -826,10 +818,11 @@ function Clients() {
               <Button
                 icon={<UserOutlined />}
                 suffix={<UserOutlined />}
-                className="border-gray-300"
+                className="border-gray-300 text-white"
                 onClick={showModal}
+                style={primaryButtonStyle}
               >
-                Add client
+                Add Client
               </Button>
             </div>
           </div>
@@ -851,16 +844,7 @@ function Clients() {
                 ),
               },
               body: {
-                row: (props) => (
-                  <tr
-                    {...props}
-                    className="hover:bg-gray-50"
-                    style={{
-                      paddingTop: 6,
-                      paddingBottom: 6,
-                    }}
-                  />
-                ),
+                row: (props) => <tr {...props} className="hover:bg-gray-50" />,
                 cell: (props) => (
                   <td
                     {...props}
@@ -886,16 +870,10 @@ function Clients() {
             }}
           />
 
-          <Modal
-            title="Add Client"
-            open={isModalVisible}
-            onCancel={handleCancel}
-            footer={null}
-          >
+          <Modal open={isModalVisible} onCancel={handleCancel} footer={null}>
             <AddClient onResult={handleResultMessage} />
           </Modal>
           <Modal
-            title="Edit Client"
             open={isEditModalVisible}
             onCancel={() => setIsEditModalVisible(false)}
             footer={null}

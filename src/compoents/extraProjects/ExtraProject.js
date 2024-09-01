@@ -14,6 +14,7 @@ import {
   Badge,
   Tag,
   Typography,
+  Space,
 } from "antd";
 import { useApp } from "../../contexts/AppContext";
 import { Timestamp } from "firebase/firestore";
@@ -25,6 +26,7 @@ import {
   EditOutlined,
   SearchOutlined,
   CloseOutlined,
+  TagOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import _ from "lodash";
@@ -113,11 +115,10 @@ function ExtraProject() {
   };
 
   const AddExtraProjectForm = () => (
-    <div className="bg-white rounded-lg p-6 max-w-md mx-auto">
-      <Title level={4} className="mb-6">
+    <div className="">
+      <h2 className="text-2xl border-b border-slate-200 pb-3 font-bold">
         Add Extra Project
-      </Title>
-      <hr />
+      </h2>
       <Form form={form} layout="vertical" onFinish={handleSave}>
         <Form.Item
           name="projectName"
@@ -184,14 +185,16 @@ function ExtraProject() {
         </Form.Item>
 
         <Form.Item className="flex justify-end space-x-2">
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{ backgroundColor: "#20B2AA" }}
-          >
-            Create Task
-          </Button>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Space>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={primaryButtonStyle}
+            >
+              Create Task
+            </Button>
+            <Button onClick={handleClose}>Cancel</Button>
+          </Space>
         </Form.Item>
       </Form>
     </div>
@@ -335,6 +338,12 @@ function ExtraProject() {
         "An error occurred while updating the status. Please try again."
       );
     }
+  };
+
+  const primaryButtonStyle = {
+    borderRadius: "4px",
+    backgroundColor: "#5BCACA",
+    borderColor: "#5BCACA",
   };
 
   const columns = [
@@ -494,10 +503,11 @@ function ExtraProject() {
               <Option value="allTasks">All Tasks</Option>
             </Select>
             <Button
-              icon={<UserOutlined />}
-              suffix={<UserOutlined />}
+              type="primary"
+              icon={<TagOutlined />}
               className="border-gray-300"
               onClick={handleOpen}
+              style={primaryButtonStyle}
             >
               Add Extra project
             </Button>
@@ -551,11 +561,11 @@ function ExtraProject() {
         size="small"
       />
       <div className="add-project-model">
-      <Modal open={isModalOpen} onCancel={handleClose} footer={null}>
-        <div className="add-project-model">
-          <AddExtraProjectForm />
-        </div>
-      </Modal>
+        <Modal open={isModalOpen} onCancel={handleClose} footer={null}>
+          <div className="add-project-model">
+            <AddExtraProjectForm />
+          </div>
+        </Modal>
       </div>
       <Modal
         title="Edit Note"
@@ -569,7 +579,7 @@ function ExtraProject() {
           rows={4}
         />
       </Modal>
-      <Modal
+      {/* <Modal
         title={currentRecord?.projectName || "Edit Project"}
         open={isEditModalOpen}
         onCancel={() => setIsEditModalOpen(false)}
@@ -581,7 +591,7 @@ function ExtraProject() {
             coordinatorOptions={coordinatorOptions}
           />
         )}
-      </Modal>
+      </Modal> */}
     </div>
   );
 }

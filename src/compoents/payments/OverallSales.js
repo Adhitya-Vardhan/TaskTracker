@@ -9,7 +9,7 @@ import {
   Space,
   Popconfirm,
 } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { useApp } from "../../contexts/AppContext";
 
 const OverallSales = () => {
@@ -222,6 +222,7 @@ const OverallSales = () => {
     ...buttonStyle,
     backgroundColor: "#5BCACA",
     borderColor: "#5BCACA",
+    borderRadius: "4px",
   };
 
   const AddBankAccountForm = () => (
@@ -231,14 +232,14 @@ const OverallSales = () => {
       onFinish={handleAddBank}
       style={formStyle}
     >
-      <h2 style={titleStyle}>Add Extra Project</h2>
+      <h2 style={titleStyle}>Add Bank Account</h2>
 
       <Form.Item
         name="projectName"
         label={<span style={requiredLabelStyle}>Bank Account Name</span>}
         rules={[{ required: true, message: "Please input the project name!" }]}
       >
-        <Input placeholder="Type project name here" style={inputStyle} />
+        <Input placeholder="Type Bank Account Name" style={inputStyle} />
       </Form.Item>
 
       <Form.Item
@@ -246,7 +247,7 @@ const OverallSales = () => {
         label={<span style={requiredLabelStyle}>Account Number</span>}
         rules={[{ required: true, message: "Please input the project name!" }]}
       >
-        <Input placeholder="Type project name here" style={inputStyle} />
+        <Input placeholder="Type Account Number" style={inputStyle} />
       </Form.Item>
 
       <Form.Item>
@@ -255,7 +256,7 @@ const OverallSales = () => {
         >
           <Button style={buttonStyle}>Cancel</Button>
           <Button type="primary" htmlType="submit" style={primaryButtonStyle}>
-            Create Task
+            Add Bank Account
           </Button>
         </div>
       </Form.Item>
@@ -265,9 +266,9 @@ const OverallSales = () => {
   return (
     <div>
       {contextHolder}
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <div style={{ width: "45%" }}>
-          <h2>Account Sales</h2>
+      <div className="flex justify-between gap-6 ">
+        <div className="w-full">
+          <h2 className="text-3xl text-left ">Account Sales</h2>
           <Table
             components={{
               header: {
@@ -313,15 +314,20 @@ const OverallSales = () => {
             rowKey="university"
           />
         </div>
-        <div style={{ width: "45%" }}>
-          <h2>Bank Sales</h2>
-          <Button
-            type="primary"
-            onClick={showModal}
-            style={{ marginBottom: 16 }}
-          >
-            Add Bank Account
-          </Button>
+        <div className=" w-[1px] bg-slate-300 ">
+        </div>
+        <div className="w-full">
+          <div className="flex justify-between">
+            <h2 className="text-3xl">Bank Sales</h2>
+            <Button
+              type="primary"
+              onClick={showModal}
+              style={primaryButtonStyle}
+              icon={<PlusCircleOutlined />}
+            >
+              Add Bank Account
+            </Button>
+          </div>
           <Table
             components={{
               header: {
