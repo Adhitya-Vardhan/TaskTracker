@@ -21,6 +21,8 @@ import {
 import { useApp } from "../../../contexts/AppContext";
 import moment from "moment";
 import { hasFormSubmit } from "@testing-library/user-event/dist/utils";
+import ExpandIcon from "../../../assets/expandIcon.svg";
+import CollapseIcon from "../../../assets/collapseIcon.svg";
 
 const calculateProjectPayments = (extraProjects, projectPayments) => {
   return extraProjects.map((project) => {
@@ -248,16 +250,7 @@ function ExtraProjectSales() {
             ),
           },
           body: {
-            row: (props) => (
-              <tr
-                {...props}
-                className="hover:bg-gray-50"
-                style={{
-                  paddingTop: 6,
-                  paddingBottom: 6,
-                }}
-              />
-            ),
+            row: (props) => <tr {...props} className="hover:bg-gray-50" />,
             cell: (props) => (
               <td
                 {...props}
@@ -328,8 +321,16 @@ function ExtraProjectSales() {
         </div>
 
         <Table
+          expandable={{
+            expandedRowRender,
+            expandIcon: ({ expanded, onExpand, record }) =>
+              expanded ? (
+                <img src={CollapseIcon} onClick={(e) => onExpand(record, e)} />
+              ) : (
+                <img src={ExpandIcon} onClick={(e) => onExpand(record, e)} />
+              ),
+          }}
           columns={columns}
-          expandable={{ expandedRowRender }}
           dataSource={data}
           rowKey="id"
           size="small"
@@ -349,16 +350,7 @@ function ExtraProjectSales() {
               ),
             },
             body: {
-              row: (props) => (
-                <tr
-                  {...props}
-                  className="hover:bg-gray-50"
-                  style={{
-                    paddingTop: 6,
-                    paddingBottom: 6,
-                  }}
-                />
-              ),
+              row: (props) => <tr {...props} className="hover:bg-gray-50" />,
               cell: (props) => (
                 <td
                   {...props}

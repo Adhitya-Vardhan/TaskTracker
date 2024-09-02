@@ -17,6 +17,9 @@ import {
   Space,
 } from "antd";
 import { useApp } from "../../contexts/AppContext";
+
+import ExpandIcon from "../../assets/expandIcon.svg";
+import CollapseIcon from "../../assets/collapseIcon.svg";
 import { Timestamp } from "firebase/firestore";
 import {
   UserOutlined,
@@ -186,11 +189,7 @@ function ExtraProject() {
 
         <Form.Item className="flex justify-end space-x-2">
           <Space>
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={primaryButtonStyle}
-            >
+            <Button type="primary" htmlType="submit" style={primaryButtonStyle}>
               Create Task
             </Button>
             <Button onClick={handleClose}>Cancel</Button>
@@ -364,14 +363,6 @@ function ExtraProject() {
       render: (dueDate) =>
         dueDate ? dueDate.toDate().toLocaleDateString() : "",
     },
-    // {
-    //   title: 'Status',
-    //   dataIndex: 'status',
-    //   key: 'status',
-    //   render: (status) => (
-    //     <Badge color={statusOptions[status]?.color} text={status} />
-    //   ),
-    // },
     {
       title: "Status",
       dataIndex: "status",
@@ -532,16 +523,7 @@ function ExtraProject() {
             ),
           },
           body: {
-            row: (props) => (
-              <tr
-                {...props}
-                className="hover:bg-gray-50"
-                style={{
-                  paddingTop: 6,
-                  paddingBottom: 6,
-                }}
-              />
-            ),
+            row: (props) => <tr {...props} className="hover:bg-gray-50" />,
             cell: (props) => (
               <td
                 {...props}
@@ -579,7 +561,7 @@ function ExtraProject() {
           rows={4}
         />
       </Modal>
-      {/* <Modal
+      <Modal
         title={currentRecord?.projectName || "Edit Project"}
         open={isEditModalOpen}
         onCancel={() => setIsEditModalOpen(false)}
@@ -591,7 +573,7 @@ function ExtraProject() {
             coordinatorOptions={coordinatorOptions}
           />
         )}
-      </Modal> */}
+      </Modal>
     </div>
   );
 }

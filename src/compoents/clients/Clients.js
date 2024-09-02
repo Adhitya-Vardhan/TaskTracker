@@ -30,6 +30,8 @@ import { useApp } from "../../contexts/AppContext";
 import Loader from "../loader/Loader";
 import _ from "lodash";
 import moment from "moment";
+import ExpandIcon from "../../assets/expandIcon.svg";
+import CollapseIcon from "../../assets/collapseIcon.svg";
 
 function Clients() {
   const {
@@ -856,6 +858,18 @@ function Clients() {
                   />
                 ),
               },
+            }}
+            expandable={{
+              expandedRowRender,
+              expandIcon: ({ expanded, onExpand, record }) =>
+                expanded ? (
+                  <img
+                    src={CollapseIcon}
+                    onClick={(e) => onExpand(record, e)}
+                  />
+                ) : (
+                  <img src={ExpandIcon} onClick={(e) => onExpand(record, e)} />
+                ),
             }}
             dataSource={searchQuery ? filteredClients : state.clients}
             columns={columns}
