@@ -280,23 +280,17 @@ function TeamMembers() {
         </h2>
         <div className="h-[458px] overflow-y-scroll p-4">
           <div className="flex items-center gap-4">
-            <Avatar
-              size={64}
-              icon={<UserOutlined />}
-            />
+            <Avatar size={64} icon={<UserOutlined />} />
             <Form.Item
               name="firstName"
-              label={<span  >First Name</span>}
+              label={<span>First Name</span>}
               rules={[
                 { required: true, message: "Please input the first name!" },
               ]}
             >
               <Input placeholder="Type First Name" />
             </Form.Item>
-            <Form.Item
-              name="lastName"
-              label="Last Name"
-            >
+            <Form.Item name="lastName" label="Last Name">
               <Input placeholder="Type Last Name" />
             </Form.Item>
           </div>
@@ -328,7 +322,7 @@ function TeamMembers() {
 
           <Form.Item
             name="role"
-            label={<span  >Role</span>}
+            label={<span>Role</span>}
             rules={[{ required: true, message: "Please select the role!" }]}
           >
             <Select placeholder="Select Role">
@@ -341,7 +335,7 @@ function TeamMembers() {
 
           <Form.Item
             name="team"
-            label={<span  >Team</span>}
+            label={<span>Team</span>}
             rules={[{ required: true, message: "Please select the team!" }]}
           >
             <Select placeholder="Select Team">
@@ -450,6 +444,8 @@ function TeamMembers() {
                   <SearchOutlined />
                 </div>
               }
+              onChange={handleSearch}
+              value={searchQuery}
               className="w-[270px] p-0 rounded-none px-2 border-gray-300"
             />
           </div>

@@ -1,60 +1,60 @@
-import React, { useState } from 'react'
-import { Layout, Modal } from 'antd';
-import SideBar from './compoents/sideBar/SideBar'
-import HeaderBar from './compoents/header/HeaderBar'
-import AttendanceOverlay from './compoents/authComponents/attendance/Attendance'
-import HomeContent from './compoents/homeContent/HomeContent';
-import AddClient from './compoents/clients/AddClient';
-import Univeristy from './compoents/universities/Univeristy';
-import TeamMembers from './compoents/teamMembers/TeamMembers';
-import Clients from './compoents/clients/Clients';
+import React, { useState } from "react";
+import { Layout, Modal } from "antd";
+import SideBar from "./compoents/sideBar/SideBar";
+import HeaderBar from "./compoents/header/HeaderBar";
+import AttendanceOverlay from "./compoents/authComponents/attendance/Attendance";
+import HomeContent from "./compoents/homeContent/HomeContent";
+import AddClient from "./compoents/clients/AddClient";
+import Univeristy from "./compoents/universities/Univeristy";
+import TeamMembers from "./compoents/teamMembers/TeamMembers";
+import Clients from "./compoents/clients/Clients";
 
-import ClientSales from './compoents/payments/clientsSales/ClientSales';
-import ClientLog from './compoents/payments/clientsLog/ClientLog';
-import OverallSales from './compoents/payments/OverallSales';
-import OverallTasks from './compoents/overallTasks/OverallTasks';
-import WeekGrades from './compoents/grades/weekgrades/WeekGrades';
-import FinalGrade from './compoents/grades/finalGrades/FinalGrade';
-import ExtraProject from './compoents/extraProjects/ExtraProject';
-import ExtraProjectLog from './compoents/payments/extraProjectlogs/ExtraProjectLog';
-import { useApp } from './contexts/AppContext';
-import { useAuth } from './contexts/AuthContext';
-import ExtraProjectSales from './compoents/payments/extraProjectSales/ExtraProjectSales';
-import { calc, getLineHeight } from 'antd/es/theme/internal';
+import ClientSales from "./compoents/payments/clientsSales/ClientSales";
+import ClientLog from "./compoents/payments/clientsLog/ClientLog";
+import OverallSales from "./compoents/payments/OverallSales";
+import OverallTasks from "./compoents/overallTasks/OverallTasks";
+import WeekGrades from "./compoents/grades/weekgrades/WeekGrades";
+import FinalGrade from "./compoents/grades/finalGrades/FinalGrade";
+import ExtraProject from "./compoents/extraProjects/ExtraProject";
+import ExtraProjectLog from "./compoents/payments/extraProjectlogs/ExtraProjectLog";
+import { useApp } from "./contexts/AppContext";
+import { useAuth } from "./contexts/AuthContext";
+import ExtraProjectSales from "./compoents/payments/extraProjectSales/ExtraProjectSales";
+import HomeContentTeam from "./compoents/homeContentTeam/HomeContentTeam";import { calc, getLineHeight } from 'antd/es/theme/internal';
 
 const { Header, Sider, Content } = Layout;
 
-
 const layoutStyle = {
-  minHeight: '100vh',
+  minHeight: "100vh",
 };
 
 const headerStyle = {
-  textAlign: 'center',
-  padding : '6px 10px 0px 6px',
-  lineHeight: '28px',
-  height : '75px',
-  backgroundColor: 'white',
+  textAlign: "center",
+  // color: '#fff',
+  height: 64,
+  paddingInline: 48,
+  lineHeight: "30px",
+  backgroundColor: "white",
 };
 
 const siderStyle = {
-  textAlign: 'center',
-  lineHeight: '100px',
+  textAlign: "center",
+  lineHeight: "100px",
   // color: '#fff',
-  backgroundColor: 'white',
+  backgroundColor: "white",
 };
 
 const contentStyle = {
   // margin: '10px 10px',
   padding: 24,
-  backgroundColor: '#f4f4f4',
+  backgroundColor: "#fff",
   minHeight: 280,
 };
 
-
 function Home() {
-  const { attendanceMarked, setAttendanceMarked,loading } = useAuth();
-  const [selectedMenu, setSelectedMenu] = useState('home');
+  const { attendanceMarked, setAttendanceMarked, loading, currentUser } =
+    useAuth();
+  const [selectedMenu, setSelectedMenu] = useState("home");
   const [isAddClientModalVisible, setIsAddClientModalVisible] = useState(false);
 
   const handlePunchIn = () => {
@@ -63,7 +63,7 @@ function Home() {
 
   const handleMenuClick = (key) => {
     setSelectedMenu(key);
-    if (key === 'addClient') {
+    if (key === "addClient") {
       setIsAddClientModalVisible(true);
     }
   };
@@ -73,46 +73,55 @@ function Home() {
   };
 
   const renderContent = () => {
+    const role = currentUser.role;
     switch (selectedMenu) {
-      case 'home':
-        return <HomeContent />;
-      case 'universities':
+      case "home":
+        if (role === "admin" || role === "manager") {
+          return <HomeContent />;
+        } else {
+          return <HomeContentTeam />;
+        }
+      case "universities":
         return <Univeristy />;
-      case 'team':
+      case "team":
         return <TeamMembers />;
-      case 'clients':
+      case "clients":
         return <Clients />;
-      case 'clientPaymentLog':
+      case "clientPaymentLog":
         return <ClientLog />;
-      case 'clientSales':
+      case "clientSales":
         return <ClientSales />;
-      case 'overallSales':
+      case "overallSales":
         return <OverallSales />;
-      case 'overallTasks':
+      case "overallTasks":
         return <OverallTasks />;
-      case 'weekGrades':
+      case "weekGrades":
         return <WeekGrades />;
-      case 'finalGrades':
+      case "finalGrades":
         return <FinalGrade />;
-      case 'extraProjects':
+      case "extraProjects":
         return <ExtraProject />;
-      case 'extraProjectLog':
+      case "extraProjectLog":
         return <ExtraProjectLog />;
-      case 'extraProjectSales':
+      case "extraProjectSales":
         return <ExtraProjectSales />;
       // Add more cases for other menu items
       default:
-        return <HomeContent />;
+        if (role === "admin" || role === "manager") {
+          return <HomeContent />;
+        } else {
+          return <HomeContentTeam />;
+        }
     }
   };
   if (loading) {
-    return <div>Loading...</div>;  // Show a loading indicator while the authentication state is being resolved
+    return <div>Loading...</div>; // Show a loading indicator while the authentication state is being resolved
   }
 
   return (
     <>
       <Layout style={layoutStyle}>
-        <Sider width="fit-content" style={siderStyle}>
+        <Sider width="20%" style={siderStyle}>
           <SideBar onMenuClick={handleMenuClick} />
         </Sider>
         <Layout>
@@ -136,7 +145,7 @@ function Home() {
         </Modal>
       </Layout>
     </>
-  )
+  );
 }
 
-export default Home
+export default Home;
