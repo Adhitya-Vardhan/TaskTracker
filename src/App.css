@@ -66,3 +66,7 @@
 .ant-modal-content {
   padding: 0 24px;
 }
+
+.content-height{
+  height: calc(100vh - 75px);
+}

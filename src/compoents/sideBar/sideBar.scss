@@ -57,3 +57,13 @@
 .ant-menu-item :hover {
   border-radius: 0px !important;
 }
+
+.ant-list-item-meta-content {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+}
+
+.increase-icon{
+  font-size: 20px !important;
+}

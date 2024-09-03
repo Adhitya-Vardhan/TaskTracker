@@ -6,15 +6,20 @@ import {
   FileOutlined,
   DollarOutlined,
   SettingOutlined,
+  OrderedListOutlined,
+  PercentageOutlined,
   SearchOutlined,
   PlusOutlined,
+  MenuFoldOutlined,
 } from "@ant-design/icons";
 import companyLogo from "../../assets/HeaderLogo.jpg";
 import { useApp } from "../../contexts/AppContext";
 import { GraduationCap, MonitorSmartphone } from "lucide-react";
 import "./sideBar.scss";
+
 function SideBar({ onMenuClick }) {
   const [selectedKey, setSelectedKey] = useState("home");
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { addSheet, state, setActiveSheet } = useApp();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
@@ -34,93 +39,105 @@ function SideBar({ onMenuClick }) {
     form.resetFields();
   };
 
+  const handleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
   const items = [
     {
       key: "home",
-      icon: <HomeOutlined />,
-      label: "Home",
+      icon: <HomeOutlined className={`${isCollapsed && "increase-icon"}`} />,
+      label: isCollapsed ? null : "Home",
     },
     {
       key: "addClient",
-      icon: <UserOutlined />,
+      icon: <UserOutlined className={`${isCollapsed && "increase-icon"}`} />,
+      label: isCollapsed ? null : "Add Client",
       icon2: <PlusOutlined />,
-      label: "Add Client",
     },
     {
       key: "tasks",
-      label: "Tasks",
-      icon: <FileOutlined />,
-      children: [
-        {
-          key: "overallTasks",
-          label: "Overall Tasks",
-        },
-        {
-          key: "extraProjects",
-          label: "Extra Projects",
-        },
-      ],
+      label: isCollapsed ? null : "Tasks",
+      icon: <OrderedListOutlined className={`${isCollapsed && "increase-icon"}`} />,
+      children: isCollapsed
+        ? null
+        : [
+            {
+              key: "overallTasks",
+              label: "Overall Tasks",
+            },
+            {
+              key: "extraProjects",
+              label: "Extra Projects",
+            },
+          ],
     },
     {
       key: "grades",
-      label: "Grades",
-      icon: <FileOutlined />,
-      children: [
-        {
-          key: "finalGrades",
-          label: "Final Grades",
-        },
-        {
-          key: "weekGrades",
-          label: "Week Grades",
-        },
-      ],
+      label: isCollapsed ? null : "Grades",
+      icon: <PercentageOutlined className={`${isCollapsed && "increase-icon"}`} />,
+      children: isCollapsed
+        ? null
+        : [
+            {
+              key: "finalGrades",
+              label: "Final Grades",
+            },
+            {
+              key: "weekGrades",
+              label: "Week Grades",
+            },
+          ],
     },
     {
       key: "payments",
-      label: "Payments",
-      icon: <DollarOutlined />,
-      children: [
-        {
-          key: "clientSales",
-          label: "Client Sales",
-        },
-        {
-          key: "clientPaymentLog",
-          label: "Client Payment Log",
-        },
-        {
-          key: "extraProjectSales",
-          label: "Extra Project Sales",
-        },
-        {
-          key: "extraProjectLog",
-          label: "Extra Project Log",
-        },
-        {
-          key: "overallSales",
-          label: "Overall Sales",
-        },
-      ],
+      label: isCollapsed ? null : "Payments",
+      icon: <DollarOutlined className={`${isCollapsed && "increase-icon"}`} />,
+      children: isCollapsed
+        ? null
+        : [
+            {
+              key: "clientSales",
+              label: "Client Sales",
+            },
+            {
+              key: "clientPaymentLog",
+              label: "Client Payment Log",
+            },
+            {
+              key: "extraProjectSales",
+              label: "Extra Project Sales",
+            },
+            {
+              key: "extraProjectLog",
+              label: "Extra Project Log",
+            },
+            {
+              key: "overallSales",
+              label: "Overall Sales",
+            },
+          ],
     },
     {
       key: "manage",
-      label: "Manage",
-      icon: <SettingOutlined />,
-      children: [
-        {
-          key: "team",
-          label: "Team",
-        },
-        {
-          key: "clients",
-          label: "Clients",
-        },
-        {
-          key: "universities",
-          label: "Universities",
-        },
-      ],
+      label: isCollapsed ? null : "Manage",
+      icon: <SettingOutlined className={`${isCollapsed && "increase-icon"}`} />,
+      children: isCollapsed
+        ? null
+        : [
+            {
+              key: "team",
+              label: "Team",
+            },
+            {
+              key: "clients",
+              label: "Clients",
+            },
+            {
+              key: "universities",
+              label: "Universities",
+            },
+          ],
     },
   ];
 
@@ -158,8 +175,6 @@ function SideBar({ onMenuClick }) {
     </Form>
   );
 
-  const [searchTerm, setSearchTerm] = useState("");
-
   const handleMenuClick = (e) => {
     onMenuClick(e.key);
     setSelectedKey(e.key);
@@ -168,86 +183,105 @@ function SideBar({ onMenuClick }) {
   return (
     <>
       <div
-        className="sidebar"
+        className={`sidebar h-svh ${isCollapsed ? "collapsed" : ""}`}
         style={{
-          width: "250px",
+          width: isCollapsed ? "80px" : "250px",
           backgroundColor: "#ffffff",
-          height: "100vh",
           display: "flex",
           flexDirection: "column",
+          justifyContent: "space-between",
           rowGap: "10px",
+          transition: "width 0.5s ease",
         }}
       >
-        <div className="logo">
-          <img className="company-logo" src={companyLogo} alt="Company Logo" />
-          <div className="company-name">
-            <div className="company-subtext">Tutorsquest</div>
-            <div className="company-maintext">TaskTracker</div>
-          </div>
-        </div>
-        {contextHolder}
-
-        <Menu
-          theme="light"
-          selectedKeys={[selectedKey]}
-          mode="inline"
-          items={items.map(item => ({
-            ...item,
-            className: item.key === selectedKey ? '' : 'ant-menu-item-not-selected'
-          }))}
-          onClick={handleMenuClick}
-          style={{ border: "none" }}
-        />
-        <div
-          className="sheet-list"
-          style={{ marginTop: "auto", padding: "16px" }}
-        >
-          {/* <Input
-            placeholder="Search Sheets"
-            prefix={<SearchOutlined />}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ marginBottom: "10px" }}
-          /> */}
-          <List
-            dataSource={state.weeks}
-            renderItem={(item) => (
-              <List.Item
-                onClick={() => handleWeekClick(item.id)}
-                style={{ padding: "8px 0", cursor: "pointer" }}
-              >
-                <List.Item.Meta
-                  title={item.name}
-                  description={
-                    <Badge
-                      status={
-                        item.id === state.activeSheet ? "success" : "default"
-                      }
-                      style={{ marginRight: "8px" }}
-                    />
-                  }
-                />
-              </List.Item>
+        <div className="flex flex-col gap-[10px]">
+          <div
+            className="logo"
+            style={{ padding: isCollapsed ? "10px" : "16px" }}
+          >
+            <img
+              className={`company-logo ${
+                isCollapsed ? "text-[20px]" : "text-[15px]"
+              }`}
+              src={companyLogo}
+              alt="Company Logo"
+              style={{ transition: "scale 0.5s ease" }}
+            />
+            {!isCollapsed && (
+              <div className="company-name">
+                <div className="company-subtext">Tutorsquest</div>
+                <div className="company-maintext">TaskTracker</div>
+              </div>
             )}
-            style={{
-              maxHeight: "200px",
-              overflowY: "auto",
-              marginBottom: "10px",
-            }}
-          />
-        </div>
+          </div>
+          {contextHolder}
 
-        <Modal
-          title="ADD SHEET NAME"
-          open={isModalVisible}
-          onCancel={handleCancel}
-          footer={[
-            <Button key="save" type="primary" onClick={handleSave}>
-              Save
-            </Button>,
-          ]}
-        >
-          <ADDSHEET />
-        </Modal>
+          <Menu
+            theme="light"
+            selectedKeys={[selectedKey]}
+            mode="inline"
+            items={items.map((item) => ({
+              ...item,
+              className:
+                item.key === selectedKey ? "" : `ant-menu-item-not-selected`,
+            }))}
+            onClick={handleMenuClick}
+            style={{ border: "none", transition: "padding 0.5s ease" }}
+          />
+
+          {!isCollapsed && (
+            <div
+              className="sheet-list"
+              style={{ marginTop: "auto", padding: "16px" }}
+            >
+              <List
+                className={`${isCollapsed ? "text-[20px]" : "text-[15px]"}`}
+                dataSource={state.weeks}
+                renderItem={(item) => (
+                  <List.Item
+                    onClick={() => handleWeekClick(item.id)}
+                    style={{ padding: "8px 0", cursor: "pointer" }}
+                    className={`${isCollapsed ? "text-[20px]" : "text-[15px]"}`}
+                  >
+                    <List.Item.Meta
+                      title={item.name}
+                      description={
+                        <Badge
+                          className={`${
+                            isCollapsed ? "text-[20px]" : "text-[15px]"
+                          }`}
+                          status={
+                            item.id === state.activeSheet
+                              ? "success"
+                              : "default"
+                          }
+                          style={{ marginRight: "8px" }}
+                        />
+                      }
+                    />
+                  </List.Item>
+                )}
+              />
+            </div>
+          )}
+
+          <Modal
+            title="ADD SHEET NAME"
+            open={isModalVisible}
+            onCancel={handleCancel}
+            footer={[
+              <Button key="save" type="primary" onClick={handleSave}>
+                Save
+              </Button>,
+            ]}
+          >
+            <ADDSHEET />
+          </Modal>
+        </div>
+        <MenuFoldOutlined
+          className={`text-start p-4 h-10 cursor-pointer border-t-2 ml-2 ${ isCollapsed ? 'text-[20px]' : 'text-[15px]'}`}
+          onClick={handleCollapse}
+        />
       </div>
     </>
   );

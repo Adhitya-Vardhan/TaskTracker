@@ -20,6 +20,7 @@ import ExtraProjectLog from './compoents/payments/extraProjectlogs/ExtraProjectL
 import { useApp } from './contexts/AppContext';
 import { useAuth } from './contexts/AuthContext';
 import ExtraProjectSales from './compoents/payments/extraProjectSales/ExtraProjectSales';
+import { calc, getLineHeight } from 'antd/es/theme/internal';
 
 const { Header, Sider, Content } = Layout;
 
@@ -118,7 +119,7 @@ function Home() {
           <Header style={headerStyle}>
             <HeaderBar attendanceMarked={attendanceMarked} />
           </Header>
-          <Content style={contentStyle}>
+          <Content className='content-height overflow-y-scroll' style={contentStyle}>
             {attendanceMarked ? renderContent() : (
               <AttendanceOverlay visible={!attendanceMarked} onPunchIn={handlePunchIn} />
             )}
