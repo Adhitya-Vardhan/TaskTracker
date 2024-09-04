@@ -3,6 +3,7 @@ import { setDoc, doc, collection, getDocs, getDoc, where, query, updateDoc, dele
 
 
 const BATCH_SIZE = 500;
+
 const fetchBatchedData = async (collectionRef, queryConstraints, dispatch, actionType) => {
     let lastVisible = null;
     let allDocuments = [];
@@ -250,6 +251,31 @@ export const editTeam = async (dispatch, id, updatedFields) => {
     }
 };
 
+export const fetchAttendance = async (teamMemberId) => {
+    try {
+        const attendanceCollectionRef = collection(db, `teamMembers/${teamMemberId}/attendance`);
+        const attendanceQuery = query(attendanceCollectionRef, orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(attendanceQuery);
+
+        const attendanceData = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            key: doc.id,
+            ...doc.data()
+        }));
+
+        return {
+            success: true,
+            data: attendanceData
+        };
+    } catch (error) {
+        console.error("Error fetching attendance data:", error);
+        return {
+            success: false,
+            message: "Failed to fetch attendance data."
+        };
+    }
+};
+
 
 
 //client functions 
@@ -274,7 +300,6 @@ export const addClient = async (dispatch, clientData) => {
             console.log('Found duplicate');
             return 'A client with this username and university already exists.';
         } else {
-            // Add new client document
             await setDoc(clientRef, { ...rest, universityId, username, suspend: false });
             dispatch({ type: 'ADD_CLIENT', payload: { id: documentId, key: documentId, universityId, username, ...rest, suspend: false } });
             console.log('client added succesfully and called dispatch')
@@ -419,15 +444,16 @@ export const addClientPayment = async (dispatch, payment) => {
     console.log('the data being added', payment);
 
     try {
+        const timestamp = Date.now();
         const paymentDocRef = await addDoc(collection(db, "payments"), {
             ...paymentData,
             clientId,
-            timestamp: serverTimestamp(), // Store the timestamp as a Firestore timestamp
+            timestamp: timestamp, // Store the timestamp as a Firestore timestamp
         });
 
         dispatch({
             type: 'ADD_CLIENT_PAYMENT',
-            payload: { ...paymentData, clientId, key: paymentDocRef.id }
+            payload: { ...paymentData, clientId, timestamp,id:paymentDocRef.id,key: paymentDocRef.id, }
         });
 
         return null; // Success
@@ -464,7 +490,7 @@ export const deleteClientPayment = async (dispatch, payment) => {
 };
 
 export const addTransactionId = async (dispatch, id, type, transactionId) => {
-    console.log('the data received for update is :',id,type,transactionId)
+    console.log('the data received for update is :', id, type, transactionId)
     const paymentRef = doc(db, 'payments', id);
 
     try {
@@ -521,16 +547,26 @@ export const addCoordinator = async (dispatch, data) => {
 
 export const fetchClientsAndCoordinators = async (dispatch, clients) => {
     try {
+        console.log('these are the clients that i receive:',clients);
         const clientsWithCoordinators = await Promise.all(clients.map(async (client) => {
             const coordinatorsRef = collection(db, `clients/${client.id}/coordinators`);
             const q = query(coordinatorsRef, orderBy('timestamp', 'desc'));
             const snapshot = await getDocs(q);
-            const coordinatorsData = Array.isArray(snapshot.docs) ? snapshot.docs.map(doc => ({ id: doc.id, key: doc.id, ...doc.data() })) : [];
-            return {
-                ...client,
-                coordinators: coordinatorsData,
-                latestCoordinatorTimestamp: coordinatorsData.length > 0 ? coordinatorsData[0].timestamp : null
-            };
+            if (!snapshot.empty) {
+                const coordinatorsData = snapshot.docs.map(doc => ({ id: doc.id, key: doc.id, ...doc.data() }));
+                return {
+                    ...client,
+                    coordinators: coordinatorsData,
+                    latestCoordinatorTimestamp: coordinatorsData.length > 0 ? coordinatorsData[0].timestamp : null
+                };
+            } else {
+                console.log(`No coordinators found for client: ${client.name}`);
+                return {
+                    ...client,
+                    coordinators: [],
+                    latestCoordinatorTimestamp: null
+                };
+            }
         }));
 
         // Sort clients by latest coordinator timestamp
@@ -619,7 +655,23 @@ export const addSheet = async (dispatch, sheetName) => {
     }
 };
 
-export const fetchWeeks = async (dispatch) => {
+// export const fetchWeeks = async (dispatch) => {
+//     try {
+//         const weeksCollectionRef = collection(db, 'weeks');
+//         const weeksQuery = query(weeksCollectionRef, orderBy('timestamp', 'desc'));
+//         const querySnapshot = await getDocs(weeksQuery);
+
+//         const weeks = querySnapshot.docs.map((doc) => ({
+//             id: doc.id,
+//             key: doc.id,
+//             ...doc.data(),
+//         }));
+//         dispatch({ type: 'SET_WEEKS', payload: weeks });
+//     } catch (error) {
+//         console.error('Error fetching weeks:', error);
+//     }
+// };
+export const fetchWeeksAndLatestTasks = async (dispatch) => {
     try {
         const weeksCollectionRef = collection(db, 'weeks');
         const weeksQuery = query(weeksCollectionRef, orderBy('timestamp', 'desc'));
@@ -630,9 +682,30 @@ export const fetchWeeks = async (dispatch) => {
             key: doc.id,
             ...doc.data(),
         }));
+
+        // Set weeks in state
         dispatch({ type: 'SET_WEEKS', payload: weeks });
+
+        // Check if there are any weeks fetched
+        if (weeks.length > 0) {
+            const latestWeekId = weeks[0].id; // Get the latest week's ID
+
+            // Fetch tasks for the latest week
+            const tasksCollectionRef = collection(db, 'weeks', latestWeekId, 'tasks');
+            const snapshot = await getDocs(tasksCollectionRef);
+
+            const tasks = snapshot.docs.map(doc => ({
+                id: doc.id,
+                key: doc.id,
+                ...doc.data()
+            }));
+
+            // Dispatch tasks to state
+            dispatch({ type: 'SET_TASKS', payload: tasks });
+            
+        }
     } catch (error) {
-        console.error('Error fetching weeks:', error);
+        console.error('Error fetching weeks or tasks:', error);
     }
 };
 
@@ -688,21 +761,21 @@ export const addTask = async (dispatch, data) => {
     }
 };
 
-export const fetchTasks = async (dispatch, activeSheet) => {
-    try {
-        const tasksCollectionRef = collection(db, 'weeks', activeSheet, 'tasks');
-        const snapshot = await getDocs(tasksCollectionRef);
+// export const fetchTasks = async (dispatch, activeSheet) => {
+//     try {
+//         const tasksCollectionRef = collection(db, 'weeks', activeSheet, 'tasks');
+//         const snapshot = await getDocs(tasksCollectionRef);
 
-        const tasks = snapshot.docs.map(doc => ({
-            id: doc.id,
-            key: doc.id,
-            ...doc.data()
-        }));
-        dispatch({ type: 'SET_TASKS', payload: tasks });
-    } catch (error) {
-        console.error('Error fetching tasks:', error);
-    }
-};
+//         const tasks = snapshot.docs.map(doc => ({
+//             id: doc.id,
+//             key: doc.id,
+//             ...doc.data()
+//         }));
+//         dispatch({ type: 'SET_TASKS', payload: tasks });
+//     } catch (error) {
+//         console.error('Error fetching tasks:', error);
+//     }
+// };
 
 
 export const deleteTask = async (dispatch, task, uniqueKey, activeSheet) => {
@@ -783,9 +856,9 @@ export const fetchAllTasksExceptLatest = async (dispatch, weeks, latestWeekId) =
     }
 };
 
-export const updateTasksStatus = async (dispatch, sheet, task, uniqueKey, newStatus) => {
+export const updateTasksStatus = async (dispatch, sheet, task, uniqueKey, newStatus,downloadURL) => {
     try {
-        console.log('Updating status for task:', task, uniqueKey, newStatus);
+        console.log('Updating status for task:', task, uniqueKey, newStatus,downloadURL);
 
         const taskDocRef = doc(db, 'weeks', sheet, 'tasks', uniqueKey);
 
@@ -797,20 +870,22 @@ export const updateTasksStatus = async (dispatch, sheet, task, uniqueKey, newSta
             }
 
             const tasks = docSnapshot.data().tasks || [];
-            // Find the task that needs to be updated
-            const updatedTasks = tasks.map(t => 
-                t.taskName === task.taskName ? { ...t, status: newStatus } : t
+            const updatedTasks = tasks.map(t =>
+                t.taskName === task.taskName ? { ...t, status: newStatus ,imageUrl: newStatus === 'Completed' ? downloadURL : t.imageUrl} : t
             );
             // Update the tasks array with the modified task
             transaction.update(taskDocRef, { tasks: updatedTasks });
         });
+        console.log('task status updated sucussfully.')
 
         dispatch({
             type: 'UPDATE_TASK_STATUS',
             payload: {
+                sheet,
                 uniqueKey,
                 taskName: task.taskName,
-                newStatus
+                newStatus,
+                downloadURL,
             }
         });
         return null; // Indicate success
@@ -820,11 +895,192 @@ export const updateTasksStatus = async (dispatch, sheet, task, uniqueKey, newSta
     }
 };
 
+export const updateFiles = async (dispatch, sheet, task, uniqueKey, uploadedFiles) => {
+    try {
+        console.log('Uploading files for task:', task, uniqueKey);
+        const taskDocRef = doc(db, 'weeks', sheet, 'tasks', uniqueKey);
+
+        await runTransaction(db, async (transaction) => {
+            const docSnapshot = await transaction.get(taskDocRef);
+
+            if (!docSnapshot.exists()) {
+                throw new Error("Document does not exist!");
+            }
+
+            const tasks = docSnapshot.data().tasks || [];
+            const updatedTasks = tasks.map(t => {
+                if (t.taskName === task.taskName) {
+                    const existingFiles = t.file || [];
+                    const newFiles = [...existingFiles, ...uploadedFiles]; // Concatenate existing files with uploaded files
+                    return {
+                        ...t,
+                        file: newFiles // Update file array directly
+                    };
+                }
+                return t;
+            });
+
+            transaction.update(taskDocRef, { tasks: updatedTasks });
+        });
+
+        console.log('Files uploaded successfully.');
+
+        dispatch({
+            type: 'UPLOAD_FILES',
+            payload: {
+                sheet,
+                uniqueKey,
+                taskName: task.taskName,
+                uploadedFiles,
+            }
+        });
+        return null; // Indicate success
+    } catch (error) {
+        console.error('Error uploading files:', error);
+        return error.message; // Return the error message
+    }
+};
+
+export const UpdateReplyDate = async (dispatch, sheet, task, uniqueKey, date) => {
+    try {
+        const taskDocRef = doc(db, 'weeks', sheet, 'tasks', uniqueKey);
+
+        await runTransaction(db, async (transaction) => {
+            const docSnapshot = await transaction.get(taskDocRef);
+
+            if (!docSnapshot.exists()) {
+                throw new Error("Document does not exist!");
+            }
+
+            const tasks = docSnapshot.data().tasks || [];
+            const updatedTasks = tasks.map(t => {
+                if (t.taskName === task.taskName && t.category === 'D') {
+                    return {
+                        ...t,
+                        reply: {
+                            ...t.reply,
+                            replyDue: date
+                        }
+                    };
+                }
+                return t;
+            });
+
+            transaction.update(taskDocRef, { tasks: updatedTasks });
+        });
+
+        console.log('Reply date updated successfully.');
+
+        dispatch({
+            type: 'UPDATE_REPLY_DATE',
+            payload: {
+                sheet,
+                uniqueKey,
+                taskName: task.taskName,
+                date,
+            }
+        });
+
+        return null;
+    } catch (error) {
+        console.error('Error updating reply date:', error);
+        return error.message;
+    }
+};
+
+export const updateReplyCount = async ( dispatch,sheet, task, uniqueKey, count) => {
+    console.log('values received:',count);
+    try {
+        const taskDocRef = doc(db, 'weeks', sheet, 'tasks', uniqueKey);
+        await runTransaction(db, async (transaction) => {
+            const docSnapshot = await transaction.get(taskDocRef);
+
+            if (!docSnapshot.exists()) {
+                throw new Error("Document does not exist!");
+            }
+
+            const tasks = docSnapshot.data().tasks || [];
+            const updatedTasks = tasks.map(t => {
+                if (t.taskName === task.taskName && t.category === 'D') {
+                    return {
+                        ...t,
+                        reply: {
+                            ...t.reply,
+                            count: count
+                        }
+                    };
+                }
+                return t;
+            });
+
+            transaction.update(taskDocRef, { tasks: updatedTasks });
+        });
+
+        console.log('Reply count updated successfully.');
+
+        dispatch({
+            type: 'UPDATE_REPLY_COUNT',
+            payload: {
+                sheet,
+                uniqueKey,
+                taskName: task.taskName,
+                count,
+            }
+        });
+
+        return null;
+    } catch (error) {
+        console.error('Error updating reply date:', error);
+        return error.message;
+    }
+};
+
+export const updateTask = async (dispatch, sheet, taskKey, uniqueKey, updatedValues) => {
+    try {
+      const taskDocRef = doc(db, 'weeks', sheet, 'tasks', uniqueKey);
+      await runTransaction(db, async (transaction) => {
+        const docSnapshot = await transaction.get(taskDocRef);
+  
+        if (!docSnapshot.exists()) {
+          throw new Error("Document does not exist!");
+        }
+  
+        const tasks = docSnapshot.data().tasks || [];
+        const updatedTasks = tasks.map(t => {
+          if (t.taskName === taskKey) {
+            return {
+              ...t,
+              ...updatedValues, // Spread both the existing task and updated values
+            };
+          }
+          return t;
+        });
+  
+        transaction.update(taskDocRef, { tasks: updatedTasks });
+      });
+  
+      console.log('Task updated successfully.');
+  
+      dispatch({
+        type: 'UPDATE_TASK',
+        payload: {
+          sheet,
+          uniqueKey,
+          taskName: taskKey,
+          updatedValues,
+        }
+      });
+  
+      return null;
+    } catch (error) {
+      console.error('Error updating task:', error);
+      return error.message;
+    }
+  };
+
 //grades actions 
 export const updateGrade = async (dispatch, updatedData) => {
-
     const { taskName, weekName, finalGrade, uniqueKey } = updatedData;
-
     try {
         await runTransaction(db, async (transaction) => {
             const weekDocRef = doc(db, 'weeks', weekName);
@@ -997,15 +1253,16 @@ export const addProjectPayment = async (dispatch, payment) => {
     console.log('the data being added', payment);
 
     try {
+        const timestamp = Date.now();
         const paymentDocRef = await addDoc(collection(db, "payments"), {
             ...paymentData,
             projectName, // Store the project name
-            timestamp: serverTimestamp(), // Store the timestamp as a Firestore timestamp
+            timestamp: timestamp, // Store the timestamp as a Firestore timestamp
         });
 
         dispatch({
             type: 'ADD_PROJECT_PAYMENT',
-            payload: { ...paymentData, projectName, key: paymentDocRef.id }
+            payload: { ...paymentData, timestamp,projectName,id:paymentDocRef.id, key: paymentDocRef.id }
         });
 
         return null;
@@ -1043,3 +1300,60 @@ export const deleteProjectPayment = async (dispatch, payment) => {
         return error.message;
     }
 };
+
+// export const fetchDataAndTasks = async (dispatch) => {
+//     try {
+//       // Fetch all weeks
+//       const weeksCollectionRef = collection(db, 'weeks');
+//       const weeksQuery = query(weeksCollectionRef, orderBy('timestamp', 'desc'));
+//       const weeksSnapshot = await getDocs(weeksQuery);
+  
+//       const weeks = weeksSnapshot.docs.map(doc => ({
+//         id: doc.id,
+//         key: doc.id,
+//         ...doc.data(),
+//       }));
+  
+//       // Dispatch weeks immediately to set them in state
+//       dispatch({ type: 'SET_WEEKS', payload: weeks });
+  
+//       // Determine the latest and remaining weeks
+//       const latestWeekId = weeks.length > 0 ? weeks[0].id : null;
+//       const remainingWeeks = weeks.slice(1); // Exclude the latest week
+  
+//       // Fetch tasks for the latest week if present
+//       let latestTasksPromise = Promise.resolve([]);
+//       if (latestWeekId) {
+//         const tasksCollectionRef = collection(db, 'weeks', latestWeekId, 'tasks');
+//         const latestTasksSnapshot = await getDocs(tasksCollectionRef);
+//         latestTasksPromise = latestTasksSnapshot.docs.map(doc => ({
+//           id: doc.id,
+//           key: doc.id,
+//           ...doc.data()
+//         }));
+//       }
+  
+//       // Fetch tasks for remaining weeks in parallel
+//       const tasksPromises = remainingWeeks.map(week => 
+//         fetchTasksForWeekInBatches(week.id)
+//       );
+  
+//       // Combine latest week tasks fetch with remaining weeks tasks fetch
+//       const allTasksResults = await Promise.all([latestTasksPromise, ...tasksPromises]);
+  
+//       // Map tasks to their weeks
+//       const allTasksByWeek = allTasksResults.reduce((acc, taskData, index) => {
+//         const weekId = index === 0 ? latestWeekId : remainingWeeks[index - 1].id;
+//         acc[weekId] = taskData;
+//         return acc;
+//       }, {});
+  
+//       // Dispatch the action to set all tasks
+//       dispatch({ type: 'SET_ALL_TASKS', payload: allTasksByWeek });
+  
+//     } catch (error) {
+//       console.error('Error fetching weeks and tasks:', error);
+//       throw error;
+//     }
+//   };
+  

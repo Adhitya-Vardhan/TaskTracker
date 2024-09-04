@@ -5,9 +5,11 @@ import {
     editTeam, addClient, fetchClients, suspendClient, activateClient, transferDocument, editClient,
     addClientPayment, fetchClientPayments, deleteClientPayment, addTransactionId, addCoordinator,
     fetchClientsAndCoordinators, editCoordinator, suspendCoordinator, activateCoordinator, addSheet,
-    fetchWeeks, addTask, fetchTasks, deleteTask, fetchAllTasksExceptLatest, updateGrade, addGrade,
+    addTask, deleteTask, fetchAllTasksExceptLatest, updateGrade, addGrade,
     addProject, fetchExtraProjects, deleteExtraProject, editProject, updateProjectStatus, addProjectPayment,
-    fetchProjectPayments, deleteProjectPayment, updateTasksStatus
+    fetchProjectPayments, deleteProjectPayment, updateTasksStatus, updateFiles, UpdateReplyDate, updateReplyCount,
+    updateTask,
+    fetchWeeksAndLatestTasks
 
 } from '../firebase/actions';
 import { type } from '@testing-library/user-event/dist/type';
@@ -23,7 +25,7 @@ const initialState = {
     projectPayments: [],
     weeks: [],
     tasks: [],
-    selectedWeekTasks: [],
+    selectedWeekTasks: null,
     allTasks: {}, // Add this to store all tasks from all weeks
     activeSheet: "",
     extraProjects: [],
@@ -299,14 +301,21 @@ const appReducer = (state, action) => {
                 clients: updatedClients
             };
         }
-        case 'ADD_SHEET':
+        case 'ADD_SHEET': {
+            const latestObjectName = state.weeks[0]?.name || 'defaultName';
             return {
                 ...state,
-                weeks: [action.payload, ...state.weeks],
-                activeSheet: action.payload.id,
+                allTasks: {
+                    ...state.allTasks,
+                    [latestObjectName]: [...state.tasks], // Add state.Tasks under the extracted name
+                },
+                tasks: [], // Initialize tasks as an empty array
+                weeks: [action.payload, ...state.weeks], // Add the new sheet to weeks
+                activeSheet: action.payload.id, // Set the active sheet
             };
+        }
         case 'SET_ACTIVE_SHEET':
-            const selectedWeekTasks = state.allTasks[action.payload] || [];
+            const selectedWeekTasks = state.allTasks[action.payload];
             return {
                 ...state,
                 activeSheet: action.payload,
@@ -351,23 +360,262 @@ const appReducer = (state, action) => {
                         : task
                 )
             };
-        case 'UPDATE_TASK_STATUS':
-            return {
-                ...state,
-                tasks: state.tasks.map(task => {
-                    if (task.id === action.payload.uniqueKey) {
+        case 'UPDATE_TASK_STATUS': {
+            const { uniqueKey, taskName, newStatus, downloadURL, sheet } = action.payload;
+            console.log(uniqueKey, taskName, sheet);
+
+            const updateTaskInObject = (tasksArray) => {
+                return tasksArray.map(obj => {
+                    if (obj.id === uniqueKey) {
+                        const updatedTasks = obj.tasks.map(task => {
+                            if (task.taskName === taskName) {
+                                return {
+                                    ...task,
+                                    status: newStatus,
+                                    imageUrl: downloadURL,
+                                };
+                            }
+                            return task;
+                        });
                         return {
-                            ...task,
-                            tasks: task.tasks.map(t =>
-                                t.taskName === action.payload.taskName
-                                    ? { ...t, status: action.payload.newStatus }
-                                    : t
-                            )
+                            ...obj,
+                            tasks: updatedTasks,  // Update the tasks array of the specific object
                         };
                     }
-                    return task;
-                })
+                    return obj;
+                });
             };
+
+            if (state.allTasks[sheet]) {
+                console.log("Task update in selected sheet");
+
+                // Update tasks for the specific sheet
+                const updatedAllTasks = updateTaskInObject(state.allTasks[sheet]);
+
+                return {
+                    ...state,
+                    allTasks: {
+                        ...state.allTasks,
+                        [sheet]: updatedAllTasks,  // Update the specific sheet tasks
+                    },
+                    selectedWeekTasks: updatedAllTasks,  // Update the selectedWeekTasks
+                };
+            } else {
+                console.log("Task update in latest week's tasks");
+
+                // Update tasks for the latest week's tasks
+                const updatedTasks = updateTaskInObject(state.tasks);
+
+                console.log('Updated tasks:', updatedTasks);
+
+                return {
+                    ...state,
+                    tasks: updatedTasks,
+                };
+            }
+        }
+        case 'UPLOAD_FILES': {
+            const { uniqueKey, taskName, sheet, uploadedFiles } = action.payload;
+            console.log(uniqueKey, taskName, sheet);
+
+            const updateFilesInTask = (tasksArray) => {
+                return tasksArray.map(obj => {
+                    if (obj.id === uniqueKey) {
+                        const updatedTasks = obj.tasks.map(task => {
+                            if (task.taskName === taskName) {
+                                const existingFiles = task.file || []; // Get existing files, or use an empty array if none
+                                const newFiles = [...existingFiles, ...uploadedFiles]; // Concatenate existing files with uploaded files
+                                return {
+                                    ...task,
+                                    file: newFiles, // Update the file array with new files
+                                };
+                            }
+                            return task;
+                        });
+                        return {
+                            ...obj,
+                            tasks: updatedTasks,  // Update the tasks array of the specific object
+                        };
+                    }
+                    return obj;
+                });
+            };
+
+            if (state.allTasks[sheet]) {
+                console.log("File upload update in selected sheet");
+
+                // Update files for the specific sheet
+                const updatedAllTasks = updateFilesInTask(state.allTasks[sheet]);
+
+                return {
+                    ...state,
+                    allTasks: {
+                        ...state.allTasks,
+                        [sheet]: updatedAllTasks,  // Update the specific sheet tasks
+                    },
+                    selectedWeekTasks: updatedAllTasks,  // Update the selectedWeekTasks
+                };
+            } else {
+                console.log("File upload update in latest week's tasks");
+
+                // Update files for the latest week's tasks
+                const updatedTasks = updateFilesInTask(state.tasks);
+
+                console.log('Updated tasks with uploaded files:', updatedTasks);
+
+                return {
+                    ...state,
+                    tasks: updatedTasks,
+                };
+            }
+        }
+        case 'UPDATE_REPLY_DATE': {
+            const { uniqueKey, taskName, sheet, date } = action.payload;
+            console.log(uniqueKey, taskName, sheet);
+
+            const updateReplyDateInTask = (tasksArray) => {
+                return tasksArray.map(obj => {
+                    if (obj.id === uniqueKey) {
+                        const updatedTasks = obj.tasks.map(task => {
+                            if (task.taskName === taskName && task.category === 'D') {
+                                return {
+                                    ...task,
+                                    reply: {
+                                        ...task.reply,
+                                        replyDue: date
+                                    }
+                                };
+                            }
+                            return task;
+                        });
+                        return {
+                            ...obj,
+                            tasks: updatedTasks,  // Update the tasks array of the specific object
+                        };
+                    }
+                    return obj;
+                });
+            };
+
+            if (state.allTasks[sheet]) {
+                console.log("Reply date update in selected sheet");
+                const updatedAllTasks = updateReplyDateInTask(state.allTasks[sheet]);
+
+                return {
+                    ...state,
+                    allTasks: {
+                        ...state.allTasks,
+                        [sheet]: updatedAllTasks,
+                    },
+                    selectedWeekTasks: updatedAllTasks,
+                };
+            } else {
+                console.log("Reply date update in latest week's tasks");
+
+                // Update reply date for the latest week's tasks
+                const updatedTasks = updateReplyDateInTask(state.tasks);
+
+                console.log('Updated tasks with new reply date:', updatedTasks);
+
+                return {
+                    ...state,
+                    tasks: updatedTasks,
+                };
+            }
+        }
+        case 'UPDATE_REPLY_COUNT': {
+            const { uniqueKey, taskName, sheet, count } = action.payload;
+            const updateReplyCountInTask = (tasksArray) => {
+                console.log("updating the reply count", count);
+                return tasksArray.map(obj => {
+                    if (obj.id === uniqueKey) {
+                        const updatedTasks = obj.tasks.map(task => {
+                            if (task.taskName === taskName && task.category === 'D') {
+                                return {
+                                    ...task,
+                                    reply: {
+                                        ...task.reply,
+                                        count: count  // Update the count of the reply
+                                    }
+                                };
+                            }
+                            return task;
+                        });
+                        return {
+                            ...obj,
+                            tasks: updatedTasks,  // Update the tasks array of the specific object
+                        };
+                    }
+                    return obj;
+                });
+            };
+
+            if (state.allTasks[sheet]) {
+                console.log("Reply count update in selected sheet");
+                const updatedAllTasks = updateReplyCountInTask(state.allTasks[sheet]);
+
+                return {
+                    ...state,
+                    allTasks: {
+                        ...state.allTasks,
+                        [sheet]: updatedAllTasks,
+                    },
+                    selectedWeekTasks: updatedAllTasks,
+                };
+            } else {
+                console.log("Reply count update in latest week's tasks");
+                const updatedTasks = updateReplyCountInTask(state.tasks);
+                console.log('Updated tasks with new reply count:', updatedTasks);
+                return {
+                    ...state,
+                    tasks: updatedTasks,
+                };
+            }
+        }
+        case 'UPDATE_TASK': {
+            const { uniqueKey, taskKey, sheet, updatedValues } = action.payload;
+
+            const updateTaskDetails = (tasksArray) => {
+                return tasksArray.map(obj => {
+                    if (obj.id === uniqueKey) {
+                        const updatedTasks = obj.tasks.map(task => {
+                            if (task.taskName === taskKey) {
+                                return {
+                                    ...task,
+                                    ...updatedValues  // Update task with new values
+                                };
+                            }
+                            return task;
+                        });
+                        return {
+                            ...obj,
+                            tasks: updatedTasks,  // Update the tasks array of the specific object
+                        };
+                    }
+                    return obj;
+                });
+            };
+
+            if (state.allTasks[sheet]) {
+                const updatedAllTasks = updateTaskDetails(state.allTasks[sheet]);
+
+                return {
+                    ...state,
+                    allTasks: {
+                        ...state.allTasks,
+                        [sheet]: updatedAllTasks,
+                    },
+                    selectedWeekTasks: updatedAllTasks,
+                };
+            } else {
+                const updatedTasks = updateTaskDetails(state.tasks);
+
+                return {
+                    ...state,
+                    tasks: updatedTasks,
+                };
+            }
+        }
         case 'UPDATE_GRADE':
             return (() => {
                 const { updatedTasks, weekName, uniqueKey } = action.payload;
@@ -489,7 +737,6 @@ const appReducer = (state, action) => {
 export const AppProvider = ({ children }) => { // Change Children to children
     const [state, dispatch] = useReducer(appReducer, initialState);
 
-
     const value = {
         state,
         dispatch,
@@ -499,11 +746,10 @@ export const AppProvider = ({ children }) => { // Change Children to children
         fetchSubjects: () => fetchSubjects(dispatch),
         fetchTeam: () => fetchTeam(dispatch),
         fetchClients: () => fetchClients(dispatch),
-        fetchWeeks: () => fetchWeeks(dispatch),
         fetchClientPayments: () => fetchClientPayments(dispatch),
         fetchProjectPayments: () => fetchProjectPayments(dispatch),
         fetchClientsAndCoordinators: (clients) => fetchClientsAndCoordinators(dispatch, clients),
-        fetchTasks: (activeSheet) => fetchTasks(dispatch, activeSheet),
+        fetchWeeksAndLatestTasks:()=>fetchWeeksAndLatestTasks(dispatch),
         fetchAllTasksExceptLatest: (weeks, activeSheet) => fetchAllTasksExceptLatest(dispatch, weeks, activeSheet),
         fetchExtraProjects: () => fetchExtraProjects(dispatch),
         addUniversity: (university) => addUniversity(dispatch, university),
@@ -533,7 +779,11 @@ export const AppProvider = ({ children }) => { // Change Children to children
         addSheet: (sheetName) => addSheet(dispatch, sheetName),
         addTask: (data) => addTask(dispatch, data),
         deleteTask: (task, uniqueKey, activeSheet) => deleteTask(dispatch, task, uniqueKey, activeSheet),
-        updateTasksStatus: (sheet, task, uniqueKey, newStatus) => updateTasksStatus(dispatch, sheet, task, uniqueKey, newStatus),
+        updateTasksStatus: (sheet, task, uniqueKey, newStatus, downloadURL) => updateTasksStatus(dispatch, sheet, task, uniqueKey, newStatus, downloadURL),
+        updateFiles: (sheet, task, uniqueKey, uploadedFiles) => updateFiles(dispatch, sheet, task, uniqueKey, uploadedFiles),
+        UpdateReplyDate: (sheet, task, uniqueKey, date) => UpdateReplyDate(dispatch, sheet, task, uniqueKey, date),
+        updateReplyCount: (sheet, task, uniqueKey, count) => updateReplyCount(dispatch, sheet, task, uniqueKey, count),
+        updateTask: (sheet, taskKey, uniqueKey, updatedValues) => updateTask(dispatch, sheet, taskKey, uniqueKey, updatedValues),
         updateGrade: (updatedData) => updateGrade(dispatch, updatedData),
         addGrade: (updatedData) => addGrade(dispatch, updatedData),
         addProject: (data) => addProject(dispatch, data),

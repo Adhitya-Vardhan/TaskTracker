@@ -20,7 +20,8 @@ import ExtraProjectLog from "./compoents/payments/extraProjectlogs/ExtraProjectL
 import { useApp } from "./contexts/AppContext";
 import { useAuth } from "./contexts/AuthContext";
 import ExtraProjectSales from "./compoents/payments/extraProjectSales/ExtraProjectSales";
-import HomeContentTeam from "./compoents/homeContentTeam/HomeContentTeam";import { calc, getLineHeight } from 'antd/es/theme/internal';
+import HomeContentTeam from "./compoents/homeContentTeam/HomeContentTeam";
+import { calc, getLineHeight } from "antd/es/theme/internal";
 
 const { Header, Sider, Content } = Layout;
 
@@ -29,11 +30,11 @@ const layoutStyle = {
 };
 
 const headerStyle = {
-  textAlign: 'center',
-  padding : '6px 10px 0px 6px',
-  lineHeight: '28px',
-  height : '75px',
-  backgroundColor: 'white',
+  textAlign: "center",
+  padding: "6px 10px 0px 6px",
+  lineHeight: "28px",
+  height: "75px",
+  backgroundColor: "white",
 };
 
 const siderStyle = {
@@ -46,7 +47,7 @@ const siderStyle = {
 const contentStyle = {
   // margin: '10px 10px',
   padding: 24,
-  backgroundColor: '#f4f4f4',
+  backgroundColor: "#f4f4f4",
   minHeight: 280,
 };
 
@@ -120,16 +121,24 @@ function Home() {
   return (
     <>
       <Layout style={layoutStyle}>
-        <Sider width="20%" style={siderStyle}>
+        <Sider width="fit-content" style={siderStyle}>
           <SideBar onMenuClick={handleMenuClick} />
         </Sider>
         <Layout>
           <Header style={headerStyle}>
             <HeaderBar attendanceMarked={attendanceMarked} />
           </Header>
-          <Content className='content-height overflow-y-scroll' style={contentStyle}>
-            {attendanceMarked ? renderContent() : (
-              <AttendanceOverlay visible={!attendanceMarked} onPunchIn={handlePunchIn} />
+          <Content
+            className="content-height overflow-y-scroll"
+            style={contentStyle}
+          >
+            {attendanceMarked ? (
+              renderContent()
+            ) : (
+              <AttendanceOverlay
+                visible={!attendanceMarked}
+                onPunchIn={handlePunchIn}
+              />
             )}
           </Content>
         </Layout>
