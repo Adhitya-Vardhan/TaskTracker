@@ -250,16 +250,7 @@ function ExtraProjectSales() {
             ),
           },
           body: {
-            row: (props) => (
-              <tr
-                {...props}
-                className="hover:bg-gray-50"
-                style={{
-                  paddingTop: 6,
-                  paddingBottom: 6,
-                }}
-              />
-            ),
+            row: (props) => <tr {...props} className="hover:bg-gray-50" />,
             cell: (props) => (
               <td
                 {...props}
